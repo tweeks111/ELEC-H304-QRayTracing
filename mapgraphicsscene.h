@@ -42,6 +42,7 @@ private:
     int size;
     int ratio;
     QPen gridPen;
+    QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
     QGraphicsLineItem* tempLine = nullptr;
     QList <QGraphicsLineItem*> gridLines;
     QList <Point*> pointList;
