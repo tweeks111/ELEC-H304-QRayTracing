@@ -9,9 +9,12 @@ class Transmitter : public QGraphicsPixmapItem
     public:
         Transmitter(QGraphicsItem *parent=nullptr);
         Transmitter(Transmitter* transmitter);
+        int frequency=5e6;
+        float power=20;
     private :
         QImage image;
         bool moving;
+
 
 public slots:
         void isMoving(bool b);

@@ -4,27 +4,33 @@
 #include <QGraphicsItem>
 #include <QPen>
 #include <QtWidgets>
-
+#include <complex>
 class Wall : public QGraphicsLineItem{
 
     public:
         Wall(QGraphicsItem *parent=nullptr);
         Wall(Wall *wall);
         Wall(QLineF line,int thickness,QString material,QGraphicsItem *parent=nullptr);
-        Wall(QLineF line,int thickness,QString material,float angularVelocity,QGraphicsItem *parent=nullptr);
         int thickness;
-        float permittivity;
-        float conductivity;
-        float beta;
+        qreal relPermittivity;
+        qreal conductivity;
+        qreal betam;
+        qreal beta0;
+        std::complex<qreal> Z;
+        qreal Z0=376.730;
+
         QString material;
         bool lineActivated;
+        std::complex<qreal> computeTXCoef(qreal incAngle);
+        std::complex<qreal> computeRXCoef(qreal incAngle);
+
         /*
     protected:
         void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
         void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
         */
 private:
-        float betaComputation(float angularVelocity);
+        void computeCoef(qreal frequency);
 
 };
 

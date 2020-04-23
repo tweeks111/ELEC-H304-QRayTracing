@@ -10,10 +10,10 @@ Ray::Ray(QLineF line, QGraphicsItem *parent) : QGraphicsLineItem(parent)
     setLine(line);
 }
 
-Ray::Ray(QLineF line, float Pi,QGraphicsItem *parent): QGraphicsLineItem(parent)
+Ray::Ray(QLineF line, float coef,QGraphicsItem *parent): QGraphicsLineItem(parent)
 {
     setLine(line);
-    this->Po=Pi;
+    this->coef=coef;
 }
 
 qreal Ray::transmissionAngle(qreal incAngle)

@@ -1,5 +1,10 @@
 #include "wall.h"
 
+#define eps0 8.85418782e-12
+#define mu0 1.25663e-6
+#define pi 3.1415926
+#define c 299792458
+
 Wall::Wall(QGraphicsItem *parent) : QGraphicsLineItem(parent)
 {
     QPen pen(Qt::blue);
@@ -17,54 +22,26 @@ Wall::Wall(QLineF line,int thickness,QString material,QGraphicsItem *parent) : Q
     QPen pen;
     if(material=="Concrete"){
         pen.setColor(QColor(72, 92, 99));
-        this->permittivity=5;
+        this->relPermittivity=5;
         this->conductivity=0.014;
     }
     else if(material=="Bricks"){
         pen.setColor(QColor(227, 105, 11));
-        this->permittivity=4.6;
+        this->relPermittivity=4.6;
         this->conductivity=0.02;
     }
     else if(material=="Wood"){
         pen.setColor(QColor(107, 80, 59));
-        this->permittivity=2.25;
+        this->relPermittivity=2.25;
         this->conductivity=0.04;
     }
     pen.setWidth(1+this->thickness/2);
     setPen(pen);
+    computeCoef(5e9);
     //setAcceptHoverEvents(true);
 }
 
-Wall::Wall(QLineF line, int thickness, QString material, float angularVelocity, QGraphicsItem *parent): QGraphicsLineItem(parent)
-{
-    this->thickness=thickness;
-    this->material=material;
-    setLine(line);
-    QPen pen;
-    if(material=="Concrete"){
-        pen.setColor(QColor(72, 92, 99));
-        this->permittivity=5;
-        this->conductivity=0.014;
-    }
-    else if(material=="Bricks"){
-        pen.setColor(QColor(227, 105, 11));
-        this->permittivity=4.6;
-        this->conductivity=0.02;
-    }
-    else if(material=="Wood"){
-        pen.setColor(QColor(107, 80, 59));
-        this->permittivity=2.25;
-        this->conductivity=0.04;
-    }
-    pen.setWidth(1+this->thickness/2);
-    setPen(pen);
-    betaComputation(angularVelocity);
-}
 
-float Wall::betaComputation(float angularVelocity)
-{
-    this->beta = angularVelocity*sqrt((permittivity*1.2566e-6)/2)*sqrt(sqrt(1+powf(conductivity/(angularVelocity*permittivity),2))+1);
-}
 
 Wall::Wall(Wall*wall){
     this->thickness=wall->thickness;
@@ -108,3 +85,33 @@ void Wall::hoverLeaveEvent(QGraphicsSceneHoverEvent *event){
 
 }*/
 
+void Wall::computeCoef(qreal frequency){
+
+    std::complex<qreal> complexPermittivity = relPermittivity*eps0 -1i*conductivity/(2*pi*frequency);
+    Z=sqrt(mu0/complexPermittivity);
+    betam= 2*pi*frequency*sqrt(mu0*relPermittivity*eps0/2)*sqrt(sqrt(1+powf(conductivity/(2*pi*frequency*relPermittivity*eps0),2))-1);
+    beta0= 2*pi*frequency/299792458;   // divided by light speed
+}
+
+std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
+{
+    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngle));  //vacuum permittivity
+    qreal s = thickness/cos(tranAngle);
+    std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
+
+    std::complex<qreal> a(0,-betam*s);
+    std::complex<qreal> b(0,beta0*2*s*sin(incAngle)*sin(tranAngle));
+    return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2)*exp(2.0*a)*exp(b));
+
+}
+std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
+{
+    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngle));  //vacuum permittivity
+    qreal s = thickness/cos(tranAngle);
+    std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
+
+    std::complex<qreal> a(0,-2*betam*s);
+    std::complex<qreal> b(0,beta0*2*s*sin(incAngle)*sin(tranAngle));
+    return (R + (1.0-pow(R,2.0))*(R*exp(a)*exp(b))/(1.0-pow(R,2.0)*exp(a)*exp(b)));
+
+}

@@ -12,7 +12,7 @@ public:
     Ray(QGraphicsItem *parent=nullptr);
     Ray(QLineF line, QGraphicsItem * parent = nullptr);
     Ray(QLineF line,float Pi,QGraphicsItem *parent=nullptr);
-    float Po;
+    float coef;
 private:
     qreal transmissionAngle(qreal incAngle);
     float reflexionCoef(qreal incAngle);
