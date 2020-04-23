@@ -11,7 +11,11 @@ class Wall : public QGraphicsLineItem{
         Wall(QGraphicsItem *parent=nullptr);
         Wall(Wall *wall);
         Wall(QLineF line,int thickness,QString material,QGraphicsItem *parent=nullptr);
+        Wall(QLineF line,int thickness,QString material,float angularVelocity,QGraphicsItem *parent=nullptr);
         int thickness;
+        float permittivity;
+        float conductivity;
+        float beta;
         QString material;
         bool lineActivated;
         /*
@@ -20,6 +24,7 @@ class Wall : public QGraphicsLineItem{
         void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
         */
 private:
+        float betaComputation(float angularVelocity);
 
 };
 

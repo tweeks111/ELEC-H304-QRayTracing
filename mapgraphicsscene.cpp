@@ -457,10 +457,10 @@ void MapGraphicsScene::load()
 void MapGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
-        foreach(QGraphicsLineItem* ray,rayList) removeItem(ray);
+        foreach(Ray* ray,rayList) removeItem(ray);
         rayList.clear();
         QPen rayPen(QColor(106, 224, 27));
-        ray1= new QGraphicsLineItem(transmitter->x(),transmitter->y(),receiver->x(),receiver->y());
+        ray1= new Ray(QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y()));
         ray1->setPen(rayPen);
         rayList.push_back(ray1);
         addItem(ray1);
@@ -476,10 +476,10 @@ void MapGraphicsScene::drawRays()
                 QPointF intersectPoint;
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
                 if(wline.intersects(lineRXtoMP1,&intersectPoint)==QLineF::BoundedIntersection){
-                    QGraphicsLineItem* ray2 = new QGraphicsLineItem(transmitter->x(),transmitter->y(),intersectPoint.x(),intersectPoint.y());
+                    Ray* ray2 = new Ray(QLineF(transmitter->x(),transmitter->y(),intersectPoint.x(),intersectPoint.y()));
                     qreal angle = incidenceAngle(ray2->line(),w1);
                     qDebug()<<angle;
-                    QGraphicsLineItem* ray3 = new QGraphicsLineItem(intersectPoint.x(),intersectPoint.y(),receiver->x(),receiver->y());
+                    Ray* ray3 = new Ray(QLineF(intersectPoint.x(),intersectPoint.y(),receiver->x(),receiver->y()));
                     rayList.push_back(ray2);
                     rayList.push_back(ray3);
                     ray2->setPen(rayPen);
@@ -502,9 +502,9 @@ void MapGraphicsScene::drawRays()
                             QLineF lineIP2toMP1(intersectPoint2.x(),intersectPoint2.y(),mirrorPoint.x(),mirrorPoint.y());
                             QPointF intersectPoint3;
                             if(wline.intersects(lineIP2toMP1,&intersectPoint3)==QLineF::BoundedIntersection){
-                                QGraphicsLineItem* lineIP3toTX= new QGraphicsLineItem(intersectPoint3.x(),intersectPoint3.y(),transmitter->x(),transmitter->y());
-                                QGraphicsLineItem* lineRXtoIP2 = new QGraphicsLineItem(receiver->x(),receiver->y(),intersectPoint2.x(),intersectPoint2.y());
-                                QGraphicsLineItem* lineIP2toIP3 = new QGraphicsLineItem(intersectPoint2.x(),intersectPoint2.y(),intersectPoint3.x(),intersectPoint3.y());
+                                Ray* lineIP3toTX= new Ray(QLineF(intersectPoint3.x(),intersectPoint3.y(),transmitter->x(),transmitter->y()));
+                                Ray* lineRXtoIP2 = new Ray(QLineF(receiver->x(),receiver->y(),intersectPoint2.x(),intersectPoint2.y()));
+                                Ray* lineIP2toIP3 = new Ray(QLineF(intersectPoint2.x(),intersectPoint2.y(),intersectPoint3.x(),intersectPoint3.y()));
                                 rayList.push_back(lineIP3toTX);rayList.push_back(lineRXtoIP2);rayList.push_back(lineIP2toIP3);
                                 lineIP3toTX->setPen(rayPen);lineRXtoIP2->setPen(rayPen);lineIP2toIP3->setPen(rayPen);
                                 addItem(lineIP3toTX);addItem(lineRXtoIP2);addItem(lineIP2toIP3);
@@ -532,10 +532,10 @@ void MapGraphicsScene::drawRays()
                                         QLineF lineIP5toMP1(intersectPoint5.x(),intersectPoint5.y(),mirrorPoint.x(),mirrorPoint.y());
                                         QPointF intersectPoint6;
                                         if(wline.intersects(lineIP5toMP1,&intersectPoint6)==QLineF::BoundedIntersection){
-                                            QGraphicsLineItem* lineIP6toTX = new QGraphicsLineItem(intersectPoint6.x(),intersectPoint6.y(),transmitter->x(),transmitter->y());
-                                            QGraphicsLineItem* lineIP5toIP6 = new QGraphicsLineItem(intersectPoint5.x(),intersectPoint5.y(),intersectPoint6.x(),intersectPoint6.y());
-                                            QGraphicsLineItem* lineIP4toIP5 = new QGraphicsLineItem(intersectPoint4.x(),intersectPoint4.y(),intersectPoint5.x(),intersectPoint5.y());
-                                            QGraphicsLineItem* lineRXtoIP4 = new QGraphicsLineItem(receiver->x(),receiver->y(),intersectPoint4.x(),intersectPoint4.y());
+                                            Ray* lineIP6toTX = new Ray(QLineF(intersectPoint6.x(),intersectPoint6.y(),transmitter->x(),transmitter->y()));
+                                            Ray* lineIP5toIP6 = new Ray(QLineF(intersectPoint5.x(),intersectPoint5.y(),intersectPoint6.x(),intersectPoint6.y()));
+                                            Ray* lineIP4toIP5 = new Ray(QLineF(intersectPoint4.x(),intersectPoint4.y(),intersectPoint5.x(),intersectPoint5.y()));
+                                            Ray* lineRXtoIP4 = new Ray(QLineF(receiver->x(),receiver->y(),intersectPoint4.x(),intersectPoint4.y()));
                                             rayList.push_back(lineIP6toTX);rayList.push_back(lineIP5toIP6);rayList.push_back(lineIP4toIP5);rayList.push_back(lineRXtoIP4);
                                             lineIP6toTX->setPen(rayPen);lineIP5toIP6->setPen(rayPen);lineIP4toIP5->setPen(rayPen);lineRXtoIP4->setPen(rayPen);
                                             addItem(lineIP6toTX);addItem(lineIP5toIP6);addItem(lineIP4toIP5);addItem(lineRXtoIP4);

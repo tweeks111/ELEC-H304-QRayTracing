@@ -9,6 +9,7 @@
 #include "wall.h"
 #include "transmitter.h"
 #include "receiver.h"
+#include "ray.h"
 
 class MapGraphicsScene : public QGraphicsScene
 {
@@ -46,10 +47,10 @@ private:
     QList <Point*> pointList;
     QList <Wall*> wallList;
     QList <Wall*> removedWalls;
-    QList <QGraphicsLineItem*> rayList;
+    QList <Ray*> rayList;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
-    QGraphicsLineItem* ray1 = nullptr;
+    Ray* ray1 = nullptr;
     bool raysAreHidden;
     bool pointsAreHidden;
     bool pointsAreAlwaysHidden;

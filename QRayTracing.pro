@@ -3,6 +3,7 @@ HEADERS += \
     mapgraphicsscene.h \
     mapwindow.h \
     point.h \
+    ray.h \
     receiver.h \
     simgraphicsscene.h \
     simwindow.h \
@@ -15,6 +16,7 @@ SOURCES += \
     mapgraphicsscene.cpp \
     mapwindow.cpp \
     point.cpp \
+    ray.cpp \
     receiver.cpp \
     simgraphicsscene.cpp \
     simwindow.cpp \
