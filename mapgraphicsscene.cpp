@@ -454,6 +454,16 @@ void MapGraphicsScene::load()
 
 }
 
+QPointF MapGraphicsScene::mirrorPointMaker(QLineF wline, QPointF initialPoint)
+{
+    float a = (wline.p2().y()-wline.p1().y())/wline.length();
+    float b = (wline.p1().x()-wline.p2().x())/wline.length();
+    float c = -a*wline.p1().x()-b*wline.p1().y();
+    float dist = a*initialPoint.x()+b*initialPoint.y()+c;
+    QPointF mirrorPoint(initialPoint.x()-2*a*dist,initialPoint.y()-2*b*dist);
+    return mirrorPoint;
+}
+
 void MapGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
@@ -467,15 +477,10 @@ void MapGraphicsScene::drawRays()
         for(Wall* w1:wallList){
             rayPen.setColor(QColor(224, 221, 27));
             if(isSameSide(w1)){
-                QLineF wline = w1->line();
-                float a = (wline.p2().y()-wline.p1().y())/wline.length();
-                float b = (wline.p1().x()-wline.p2().x())/wline.length();
-                float c = -a*wline.p1().x()-b*wline.p1().y();
-                float dist = a*transmitter->x()+b*transmitter->y()+c;
-                QPointF mirrorPoint(transmitter->x()-2*a*dist,transmitter->y()-2*b*dist);
+                QPointF mirrorPoint = mirrorPointMaker(w1->line(), transmitter->pos());
                 QPointF intersectPoint;
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
-                if(wline.intersects(lineRXtoMP1,&intersectPoint)==QLineF::BoundedIntersection){
+                if(w1->line().intersects(lineRXtoMP1,&intersectPoint)==QLineF::BoundedIntersection){
                     Ray* ray2 = new Ray(QLineF(transmitter->x(),transmitter->y(),intersectPoint.x(),intersectPoint.y()));
                     qreal angle = incidenceAngle(ray2->line(),w1);
                     qDebug()<<angle;
@@ -489,19 +494,13 @@ void MapGraphicsScene::drawRays()
                 for(Wall* w2:wallList){
                     rayPen.setColor(QColor(224, 152, 27));
                     if(w2!=w1){
-                        QLineF wline2 = w2->line();
-                        float a2 = (wline2.p2().y()-wline2.p1().y())/wline2.length();
-                        float b2 = (wline2.p1().x()-wline2.p2().x())/wline2.length();
-                        float c2 = -a2*wline2.p1().x()-b2*wline2.p1().y();
-                        float dist2 = a2*mirrorPoint.x()+b2*mirrorPoint.y()+c2;
-                        QPointF mirrorPoint2(mirrorPoint.x()-2*a2*dist2,mirrorPoint.y()-2*b2*dist2);
-
+                        QPointF mirrorPoint2 = mirrorPointMaker(w2->line(), mirrorPoint);
                         QPointF intersectPoint2;
                         QLineF lineRXtoMP2(receiver->x(),receiver->y(),mirrorPoint2.x(),mirrorPoint2.y());
-                        if(wline2.intersects(lineRXtoMP2,&intersectPoint2)==QLineF::BoundedIntersection){
+                        if(w2->line().intersects(lineRXtoMP2,&intersectPoint2)==QLineF::BoundedIntersection){
                             QLineF lineIP2toMP1(intersectPoint2.x(),intersectPoint2.y(),mirrorPoint.x(),mirrorPoint.y());
                             QPointF intersectPoint3;
-                            if(wline.intersects(lineIP2toMP1,&intersectPoint3)==QLineF::BoundedIntersection){
+                            if(w1->line().intersects(lineIP2toMP1,&intersectPoint3)==QLineF::BoundedIntersection){
                                 Ray* lineIP3toTX= new Ray(QLineF(intersectPoint3.x(),intersectPoint3.y(),transmitter->x(),transmitter->y()));
                                 Ray* lineRXtoIP2 = new Ray(QLineF(receiver->x(),receiver->y(),intersectPoint2.x(),intersectPoint2.y()));
                                 Ray* lineIP2toIP3 = new Ray(QLineF(intersectPoint2.x(),intersectPoint2.y(),intersectPoint3.x(),intersectPoint3.y()));
@@ -516,22 +515,16 @@ void MapGraphicsScene::drawRays()
 
                             rayPen.setColor(QColor(224, 27, 27));
                             if(w3!=w2){
-                                QLineF wline3 = w3->line();
-                                float a3 = (wline3.p2().y()-wline3.p1().y())/wline3.length();
-                                float b3 = (wline3.p1().x()-wline3.p2().x())/wline3.length();
-                                float c3 = -a3*wline3.p1().x()-b3*wline3.p1().y();
-                                float dist3 = a3*mirrorPoint2.x()+b3*mirrorPoint2.y()+c3;
-
-                                QPointF mirrorPoint3(mirrorPoint2.x()-2*a3*dist3,mirrorPoint2.y()-2*b3*dist3);
+                                QPointF mirrorPoint3 = mirrorPointMaker(w3->line(), mirrorPoint2);
                                 QPointF intersectPoint4;
                                 QLineF lineRXtoMP3(receiver->x(),receiver->y(),mirrorPoint3.x(),mirrorPoint3.y());
-                                if(wline3.intersects(lineRXtoMP3,&intersectPoint4)==QLineF::BoundedIntersection){
+                                if(w3->line().intersects(lineRXtoMP3,&intersectPoint4)==QLineF::BoundedIntersection){
                                     QLineF lineIP4toMP2(intersectPoint4.x(),intersectPoint4.y(),mirrorPoint2.x(),mirrorPoint2.y());
                                     QPointF intersectPoint5;
-                                    if(wline2.intersects(lineIP4toMP2,&intersectPoint5)==QLineF::BoundedIntersection){
+                                    if(w2->line().intersects(lineIP4toMP2,&intersectPoint5)==QLineF::BoundedIntersection){
                                         QLineF lineIP5toMP1(intersectPoint5.x(),intersectPoint5.y(),mirrorPoint.x(),mirrorPoint.y());
                                         QPointF intersectPoint6;
-                                        if(wline.intersects(lineIP5toMP1,&intersectPoint6)==QLineF::BoundedIntersection){
+                                        if(w1->line().intersects(lineIP5toMP1,&intersectPoint6)==QLineF::BoundedIntersection){
                                             Ray* lineIP6toTX = new Ray(QLineF(intersectPoint6.x(),intersectPoint6.y(),transmitter->x(),transmitter->y()));
                                             Ray* lineIP5toIP6 = new Ray(QLineF(intersectPoint5.x(),intersectPoint5.y(),intersectPoint6.x(),intersectPoint6.y()));
                                             Ray* lineIP4toIP5 = new Ray(QLineF(intersectPoint4.x(),intersectPoint4.y(),intersectPoint5.x(),intersectPoint5.y()));
