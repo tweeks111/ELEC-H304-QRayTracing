@@ -2,7 +2,6 @@
 
 MapWindow::MapWindow(MapGraphicsScene* scene, QGraphicsView* view,QWidget *parent): QMainWindow(parent)
 {
-
     this->scene = scene;
     this->view = view;
     this->setCentralWidget(view);
@@ -33,14 +32,12 @@ void MapWindow::resizeEvent(QResizeEvent *event)
 {
     view->fitInView(scene->itemsBoundingRect(),Qt::KeepAspectRatio);
     QMainWindow::resizeEvent(event);
-
 }
 
 void MapWindow::showEvent(QShowEvent *event)
 {
     view->fitInView(scene->itemsBoundingRect(),Qt::KeepAspectRatio);
 }
-
 
 void MapWindow::addActionsToToolbar(){
     toolBar= new QToolBar("Tools");
@@ -124,7 +121,6 @@ void MapWindow::addActionsToToolbar(){
 }
 
 void MapWindow::addLabelsToLabelbar(){
-
 //Label Bar
     labelBar=new QToolBar("Labels");
     addToolBar(Qt::BottomToolBarArea,labelBar);
@@ -139,7 +135,6 @@ void MapWindow::addLabelsToLabelbar(){
     distanceLabel = new QLabel("TX/RX Distance : 0 cm");
         connect(scene,&MapGraphicsScene::sendDistance,distanceLabel,&QLabel::setText);
     labelBar->addWidget(distanceLabel);
-
 }
 
 void MapWindow::addActionsToMenubar()

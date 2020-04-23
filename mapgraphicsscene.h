@@ -37,23 +37,24 @@ class MapGraphicsScene : public QGraphicsScene
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    private:
-        int size;
-        int ratio;
-        QPen gridPen;
-        QGraphicsLineItem* tempLine = nullptr;
-        QList <QGraphicsLineItem*> gridLines;
-        QList <Point*> pointList;
-        QList <Wall*> wallList;
-        QList <Wall*> removedWalls;
-        QList <QGraphicsLineItem*> rayList;
-        Transmitter* transmitter=nullptr;
-        Receiver* receiver = nullptr;
-        QGraphicsLineItem* ray1 = nullptr;
-        bool raysAreHidden;
-        bool pointsAreHidden;
-        bool pointsAreAlwaysHidden;
-        bool isSameSide(Wall *w);
+private:
+    int size;
+    int ratio;
+    QPen gridPen;
+    QGraphicsLineItem* tempLine = nullptr;
+    QList <QGraphicsLineItem*> gridLines;
+    QList <Point*> pointList;
+    QList <Wall*> wallList;
+    QList <Wall*> removedWalls;
+    QList <QGraphicsLineItem*> rayList;
+    Transmitter* transmitter=nullptr;
+    Receiver* receiver = nullptr;
+    QGraphicsLineItem* ray1 = nullptr;
+    bool raysAreHidden;
+    bool pointsAreHidden;
+    bool pointsAreAlwaysHidden;
+    bool isSameSide(Wall *w);
+    qreal incidenceAngle(QLineF ray, Wall *wall);
     signals:
             void sendPosition(QString);
             void sendLength(QString);

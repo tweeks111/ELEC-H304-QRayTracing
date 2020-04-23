@@ -1,4 +1,6 @@
 #include "mapgraphicsscene.h"
+#include "mapgraphicsscene.h"
+#include "mapgraphicsscene.h"
 
 MapGraphicsScene::MapGraphicsScene(){
     this->size=1000;
@@ -475,6 +477,8 @@ void MapGraphicsScene::drawRays()
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
                 if(wline.intersects(lineRXtoMP1,&intersectPoint)==QLineF::BoundedIntersection){
                     QGraphicsLineItem* ray2 = new QGraphicsLineItem(transmitter->x(),transmitter->y(),intersectPoint.x(),intersectPoint.y());
+                    qreal angle = incidenceAngle(ray2->line(),w1);
+                    qDebug()<<angle;
                     QGraphicsLineItem* ray3 = new QGraphicsLineItem(intersectPoint.x(),intersectPoint.y(),receiver->x(),receiver->y());
                     rayList.push_back(ray2);
                     rayList.push_back(ray3);
@@ -564,4 +568,22 @@ bool MapGraphicsScene::isSameSide(Wall* w)
     bool b2 = (receiver->x()-wallP1.x())*(wallP2.y()-wallP1.y())-(receiver->y()-wallP1.y())*(wallP2.x()-wallP1.x())>0;
 
     return (b1==b2);
+}
+
+qreal MapGraphicsScene::incidenceAngle(QLineF ray,Wall* wall)
+{
+    qreal angle  = ray.angleTo(wall->line().normalVector());
+
+    if(angle>270){
+        angle=360-angle;
+    }
+    else if(angle>180){
+        angle=angle-180;
+    }
+    else if(angle>90){
+        angle=180-angle;
+    }
+
+    return angle;
+
 }
