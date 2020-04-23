@@ -30,6 +30,7 @@ class MapGraphicsScene : public QGraphicsScene
         QColor pointColor;
         QColor gridColor;
         QString resolution;
+        int ratio;
         QList<QGraphicsItem*> getItems();
         QList<Wall*> getWalls();
         Transmitter* getTransmitter();
@@ -40,7 +41,6 @@ protected:
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
     int size;
-    int ratio;
     QPen gridPen;
     QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
     QGraphicsLineItem* tempLine = nullptr;
@@ -56,6 +56,7 @@ private:
     bool pointsAreHidden;
     bool pointsAreAlwaysHidden;
     bool isSameSide(Wall *w);
+    std::complex<qreal> checkWalls(Ray *ray);
     qreal incidenceAngle(QLineF ray, Wall *wall);
     signals:
             void sendPosition(QString);

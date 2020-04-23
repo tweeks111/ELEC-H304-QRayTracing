@@ -89,13 +89,14 @@ void Wall::computeCoef(qreal frequency){
 
     std::complex<qreal> complexPermittivity = relPermittivity*eps0 -1i*conductivity/(2*pi*frequency);
     Z=sqrt(mu0/complexPermittivity);
-    betam= 2*pi*frequency*sqrt(mu0*relPermittivity*eps0/2)*sqrt(sqrt(1+powf(conductivity/(2*pi*frequency*relPermittivity*eps0),2))-1);
-    beta0= 2*pi*frequency/299792458;   // divided by light speed
+    betam= 2*pi*frequency*sqrt(mu0*relPermittivity*eps0/2)*sqrt(sqrt(1+pow(conductivity/(2*pi*frequency*relPermittivity*eps0),2))-1);
+    beta0= 2*pi*frequency/c;   // divided by light speed
 }
 
 std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
 {
-    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngle));  //vacuum permittivity
+    qreal incAngleRad=incAngle*pi/180;
+    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
     qreal s = thickness/cos(tranAngle);
     std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
 
@@ -106,7 +107,8 @@ std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
 }
 std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
 {
-    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngle));  //vacuum permittivity
+    qreal incAngleRad=incAngle*pi/180;
+    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
     qreal s = thickness/cos(tranAngle);
     std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
 

@@ -21,12 +21,3 @@ qreal Ray::transmissionAngle(qreal incAngle)
 
 }
 
-float Ray::reflexionCoef(qreal incAngle)
-{
-
-}
-
-float Ray::transmissionCoef(qreal incAngle)
-{
-
-}

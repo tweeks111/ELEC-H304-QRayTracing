@@ -9,7 +9,7 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     transmitter->setPos(mapscene->getTransmitter()->pos());
     this->resolution=mapscene->resolution;
     this->size=1000;
-    this->ratio=2;
+    this->ratio=mapscene->ratio;
     T=128;
     setSceneRect(0,0,ratio*size,size);
     gridColor=Qt::lightGray;
