@@ -52,9 +52,7 @@ void SimGraphicsScene::drawRect(){
            rectList.push_back(rect);
            rect->setPen(gridPen);
            receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
-           qDebug()<<"beforeDrawRays";
            drawRays();
-           qDebug()<<"afterDrawRays";
            qreal ratioPower = abs((-51-receiver->power)/(-51+82));//(transmitter->power_dbm-receiver->power)/(transmitter->power_dbm+82);
            if (ratioPower >1){
                ratioPower =1;
@@ -80,55 +78,36 @@ void SimGraphicsScene::setRectTransparency(int value){
 
 void SimGraphicsScene::drawRays()
 {
-    qDebug()<<"start";
     if(!raysAreHidden){
-        qDebug()<<"not hidden";
         qreal power = 0;
         std::complex<qreal> En=0;
-        foreach(Ray* ray,rayList) removeItem(ray);
         rayList.clear();
-        qDebug()<<"raylist ok";
-        QPen rayPen(QColor(106, 224, 27));
         QLineF LineTxToRx = QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y());
-        qDebug()<<"transmitter ok";
         ray1= new Ray(LineTxToRx);
         ray1->coef*=checkWalls(ray1);
-        qDebug()<<"check wall ok";
         En = EnCalcultor({ray1},LineTxToRx);
         power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
-        ray1->setPen(rayPen);
         rayList.push_back(ray1);
-        addItem(ray1);
-        qDebug()<<"add item ok";
         for(Wall* w1:wallList){
-            qDebug()<<"wall list ok";
             if(isSameSide(w1)){
-                qDebug()<<"wall list ok";
                 QPointF mirrorPoint = mirrorPointMaker(w1->line(), transmitter->pos());
                 QPointF intersectPoint;
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
                 if(w1->line().intersects(lineRXtoMP1,&intersectPoint)==QLineF::BoundedIntersection){
-                    qDebug()<<"boundedInterserction ok";
-                    rayPen.setColor(QColor(224, 221, 27));
                     Ray* ray2 = new Ray(QLineF(transmitter->x(),transmitter->y(),intersectPoint.x(),intersectPoint.y()));
                     ray2->coef*=checkWalls(ray2);
                     Ray* ray3 = new Ray(QLineF(intersectPoint.x(),intersectPoint.y(),receiver->x(),receiver->y()));
                     qreal angle = incidenceAngle(ray3->line(),w1);
-                    qDebug()<<"incidence ok";
                     ray3->coef*=checkWalls(ray3);
                     ray3->coef*=w1->computeRXCoef(angle);
                     rayList.push_back(ray2);
                     rayList.push_back(ray3);
-                    ray2->setPen(rayPen);
-                    ray3->setPen(rayPen);
                     En = EnCalcultor({ray2,ray3},lineRXtoMP1);
                     power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
-                    addItem(ray2);addItem(ray3);
                     }
                 for(Wall* w2:wallList){
 
                     if(w2!=w1){
-                        rayPen.setColor(QColor(224, 152, 27));
                         QPointF mirrorPoint2 = mirrorPointMaker(w2->line(), mirrorPoint);
                         QPointF intersectPoint2;
                         QLineF lineRXtoMP2(receiver->x(),receiver->y(),mirrorPoint2.x(),mirrorPoint2.y());
@@ -147,10 +126,8 @@ void SimGraphicsScene::drawRays()
                                 lineIP2toIP3->coef*=checkWalls(lineIP2toIP3);
                                 lineIP2toIP3->coef*=w1->computeRXCoef(angle3);
                                 rayList.push_back(lineIP3toTX);rayList.push_back(lineRXtoIP2);rayList.push_back(lineIP2toIP3);
-                                lineIP3toTX->setPen(rayPen);lineRXtoIP2->setPen(rayPen);lineIP2toIP3->setPen(rayPen);
                                 En = EnCalcultor({lineIP3toTX,lineRXtoIP2,lineIP2toIP3},lineRXtoMP2);
                                 power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
-                                addItem(lineIP3toTX);addItem(lineRXtoIP2);addItem(lineIP2toIP3);
                             }
 
                         }
@@ -159,7 +136,6 @@ void SimGraphicsScene::drawRays()
 
 
                             if(w3!=w2){
-                                rayPen.setColor(QColor(224, 27, 27));
                                 QPointF mirrorPoint3 = mirrorPointMaker(w3->line(), mirrorPoint2);
                                 QPointF intersectPoint4;
                                 QLineF lineRXtoMP3(receiver->x(),receiver->y(),mirrorPoint3.x(),mirrorPoint3.y());
@@ -185,10 +161,8 @@ void SimGraphicsScene::drawRays()
                                             lineRXtoIP4->coef*=checkWalls(lineRXtoIP4);
                                             lineRXtoIP4->coef*=w3->computeRXCoef(angle6);
                                             rayList.push_back(lineIP6toTX);rayList.push_back(lineIP5toIP6);rayList.push_back(lineIP4toIP5);rayList.push_back(lineRXtoIP4);
-                                            lineIP6toTX->setPen(rayPen);lineIP5toIP6->setPen(rayPen);lineIP4toIP5->setPen(rayPen);lineRXtoIP4->setPen(rayPen);
                                             En = EnCalcultor({lineIP6toTX,lineIP5toIP6,lineIP4toIP5,lineRXtoIP4},lineRXtoMP3);
                                             power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
-                                            addItem(lineIP6toTX);addItem(lineIP5toIP6);addItem(lineIP4toIP5);addItem(lineRXtoIP4);
 
                                         }
                                     }
@@ -205,7 +179,6 @@ void SimGraphicsScene::drawRays()
 
         }
         receiver->power=10*log10(power/1e-3);
-        qDebug()<<"receiver ok";
     }
 
 }
