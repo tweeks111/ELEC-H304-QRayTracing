@@ -39,6 +39,8 @@ class MapGraphicsScene : public QGraphicsScene
         Transmitter* getTransmitter();
         bool isTransmitterNullptr();
         void setGridColor(QColor background, QColor grid);
+        Transmitter* transmitter=nullptr;
+        Receiver* receiver = nullptr;
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -52,8 +54,6 @@ private:
     QList <Wall*> wallList;
     QList <Wall*> removedWalls;
     QList <Ray*> rayList;
-    Transmitter* transmitter=nullptr;
-    Receiver* receiver = nullptr;
     QGraphicsTextItem* receiverPower=nullptr;
     Ray* ray1 = nullptr;
     bool raysAreHidden;
