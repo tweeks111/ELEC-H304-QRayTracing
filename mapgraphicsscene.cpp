@@ -620,6 +620,7 @@ void MapGraphicsScene::drawRays()
 
         }
         receiver->power=10*log10(power/1e-3);
+        receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
     }
 
 }
