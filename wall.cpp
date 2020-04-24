@@ -50,16 +50,22 @@ Wall::Wall(Wall*wall){
     QPen pen;
     if(material=="Concrete"){
         pen.setColor(QColor(72, 92, 99));
+        this->relPermittivity=5;
+        this->conductivity=0.014;
     }
     else if(material=="Bricks"){
         pen.setColor(QColor(227, 105, 11));
+        this->relPermittivity=4.6;
+        this->conductivity=0.02;
     }
     else if(material=="Wood"){
         pen.setColor(QColor(107, 80, 59));
+        this->relPermittivity=2.25;
+        this->conductivity=0.04;
     }
     pen.setWidth(1+this->thickness/2);
     setPen(pen);
-
+    computeCoef(5e9);
 
 }
 
