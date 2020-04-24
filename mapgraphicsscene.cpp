@@ -488,7 +488,7 @@ std::complex<qreal> MapGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF Line
     std::complex<qreal> coef = 1;
     foreach(Ray* ray,rays) coef*=ray->coef;
     std::complex<qreal> exponent(0,-transmitter->beta0);
-    qreal dn = LineMirrorToRx.length()*20/size;
+    qreal dn = LineMirrorToRx.length()/pixelPerMeter;
     std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
     return En;
 }
@@ -528,7 +528,7 @@ void MapGraphicsScene::drawRays()
                     rayList.push_back(ray3);
                     ray2->setPen(rayPen);
                     ray3->setPen(rayPen);
-                    En = EnCalcultor({ray2,ray2},lineRXtoMP1);
+                    En = EnCalcultor({ray2,ray3},lineRXtoMP1);
                     power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
                     addItem(ray2);addItem(ray3);
                     }
@@ -611,6 +611,7 @@ void MapGraphicsScene::drawRays()
             }
 
         }
+        qDebug()<<10*log10(power/1e-3);
     }
 
 }
