@@ -43,9 +43,10 @@ protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
-
+    int size;
     QPen gridPen;
     QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
+    std::complex<qreal> EnCalcultor(QList <Ray*> rays, QLineF mirrorToRx);
     QGraphicsLineItem* tempLine = nullptr;
     QList <QGraphicsLineItem*> gridLines;
     QList <Point*> pointList;

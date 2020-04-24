@@ -483,20 +483,31 @@ std::complex<qreal> MapGraphicsScene::checkWalls(Ray *ray)
     return coef;
 }
 
+std::complex<qreal> MapGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF LineMirrorToRx)
+{
+    std::complex<qreal> coef = 1;
+    foreach(Ray* ray,rays) coef*=ray->coef;
+    std::complex<qreal> exponent(0,-transmitter->beta0);
+    qreal dn = LineMirrorToRx.length()*20/size;
+    std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
+    return En;
+}
+
+
 void MapGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
+        float power = 0;
         std::complex<qreal> En=0;
         foreach(Ray* ray,rayList) removeItem(ray);
         rayList.clear();
         QPen rayPen(QColor(106, 224, 27));
-        ray1= new Ray(QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y()));
+        QLineF LineTxToRx = QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y());
+        ray1= new Ray(LineTxToRx);
         ray1->coef*=checkWalls(ray1);
-        qreal rayLength = ray1->line().length()*20/pixelResolution;
-        std::complex<qreal> exponent(0,-transmitter->beta0);
-        En+=ray1->coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*rayLength)/rayLength;
+        En = EnCalcultor({ray1},LineTxToRx);
+        power += (1/(8*transmitter->Ra))*abs(pow(transmitter->he*En,2));
         ray1->setPen(rayPen);
-        //qDebug()<<sqrt(pow(real(ray1->coef),2)+pow(imag(ray1->coef),2));
         rayList.push_back(ray1);
         addItem(ray1);
         for(Wall* w1:wallList){
@@ -517,6 +528,8 @@ void MapGraphicsScene::drawRays()
                     rayList.push_back(ray3);
                     ray2->setPen(rayPen);
                     ray3->setPen(rayPen);
+                    En = EnCalcultor({ray2,ray2},lineRXtoMP1);
+                    power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
                     addItem(ray2);addItem(ray3);
                     }
                 for(Wall* w2:wallList){
@@ -542,6 +555,8 @@ void MapGraphicsScene::drawRays()
                                 lineIP2toIP3->coef*=w1->computeRXCoef(angle3);
                                 rayList.push_back(lineIP3toTX);rayList.push_back(lineRXtoIP2);rayList.push_back(lineIP2toIP3);
                                 lineIP3toTX->setPen(rayPen);lineRXtoIP2->setPen(rayPen);lineIP2toIP3->setPen(rayPen);
+                                En = EnCalcultor({lineIP3toTX,lineRXtoIP2,lineIP2toIP3},lineRXtoMP2);
+                                power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
                                 addItem(lineIP3toTX);addItem(lineRXtoIP2);addItem(lineIP2toIP3);
                             }
 
@@ -578,6 +593,8 @@ void MapGraphicsScene::drawRays()
                                             lineRXtoIP4->coef*=w3->computeRXCoef(angle6);
                                             rayList.push_back(lineIP6toTX);rayList.push_back(lineIP5toIP6);rayList.push_back(lineIP4toIP5);rayList.push_back(lineRXtoIP4);
                                             lineIP6toTX->setPen(rayPen);lineIP5toIP6->setPen(rayPen);lineIP4toIP5->setPen(rayPen);lineRXtoIP4->setPen(rayPen);
+                                            En = EnCalcultor({lineIP6toTX,lineIP5toIP6,lineIP4toIP5,lineRXtoIP4},lineRXtoMP3);
+                                            power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
                                             addItem(lineIP6toTX);addItem(lineIP5toIP6);addItem(lineIP4toIP5);addItem(lineRXtoIP4);
 
                                         }
@@ -590,6 +607,7 @@ void MapGraphicsScene::drawRays()
 
                     }
                 }
+
             }
 
         }
