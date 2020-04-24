@@ -1,12 +1,11 @@
 #include "mapgraphicsscene.h"
-#include "mapgraphicsscene.h"
-#include "mapgraphicsscene.h"
-
 
 MapGraphicsScene::MapGraphicsScene(){
-    this->size=1000;
+    this->pixelResolution=1000;
     this->ratio=1;
-    setSceneRect(0,0,ratio*size,size);
+    this->lengthInMeter=25;
+    this->pixelPerMeter=pixelResolution/lengthInMeter;
+    setSceneRect(0,0,ratio*pixelResolution,pixelResolution);
     gridColor=Qt::lightGray;
     pointColor=Qt::lightGray;
     gridPen.setColor(gridColor);
@@ -30,16 +29,16 @@ void MapGraphicsScene::drawGrid(QString resolution)
     gridLines.clear();
     pointList.clear();
     QList <QGraphicsLineItem*> tempList;
-    float frameNb = 20/resolution.toFloat();
+    float frameNb = lengthInMeter/resolution.toFloat();
     for(int i =0;i<=frameNb;i++){
-       QGraphicsLineItem* line = new QGraphicsLineItem(0,i*size/frameNb,ratio*size,i*size/frameNb);
+       QGraphicsLineItem* line = new QGraphicsLineItem(0,i*pixelResolution/frameNb,ratio*pixelResolution,i*pixelResolution/frameNb);
        line->setPen(gridPen);
        gridLines.push_back(line);
        tempList.push_back(line);
        addItem(line);
     }
     for(int i =0;i<=ratio*frameNb;i++){
-       QGraphicsLineItem* line = new QGraphicsLineItem(i*size/frameNb,0,i*size/frameNb,size);
+       QGraphicsLineItem* line = new QGraphicsLineItem(i*pixelResolution/frameNb,0,i*pixelResolution/frameNb,pixelResolution);
        line->setPen(gridPen);
        gridLines.push_back(line);
        addItem(line);
@@ -170,7 +169,7 @@ void MapGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
                             addItem(wall);
                             this->removeItem(tempLine);
                             lineActivated=false;
-                            emit sendLength("Length : "+QString::number(2000*wall->line().length()/size)+" cm ");
+                            emit sendLength("Length : "+QString::number(wall->line().length()/pixelPerMeter)+" m ");
                         }
                         break;
                     }
@@ -195,7 +194,7 @@ void MapGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if(lineActivated){
         QLineF l(tempLine->line().p1(), event->scenePos());
         tempLine->setLine(l);
-        emit sendLength("Length : "+QString::number(2000*tempLine->line().length()/size)+" cm ");
+        emit sendLength("Length : "+QString::number(tempLine->line().length()/pixelPerMeter)+" m ");
 
     }
     if(transmitterActivated){
@@ -211,9 +210,9 @@ void MapGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
     }
     if(receiver&&transmitter){
-        sendDistance("TX/RX Distance : "+QString::number(2000*ray1->line().length()/size)+" cm");
+        sendDistance("TX/RX Distance : "+QString::number(ray1->line().length()/pixelPerMeter)+" m");
     }
-    sendPosition("x : "+QString::number(2000*event->scenePos().x()/size)+" cm y : "+QString::number(2000*event->scenePos().y()/size)+" cm ");
+    sendPosition("x : "+QString::number(event->scenePos().x()/pixelPerMeter)+" m y : "+QString::number(event->scenePos().y()/pixelPerMeter)+" m ");
     QGraphicsScene::mouseMoveEvent(event);
 }
 
@@ -493,8 +492,7 @@ void MapGraphicsScene::drawRays()
         QPen rayPen(QColor(106, 224, 27));
         ray1= new Ray(QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y()));
         ray1->coef*=checkWalls(ray1);
-        qDebug()<<ray1;
-        qreal rayLength = ray1->line().length()*20/size;
+        qreal rayLength = ray1->line().length()*20/pixelResolution;
         std::complex<qreal> exponent(0,-transmitter->beta0);
         En+=ray1->coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*rayLength)/rayLength;
         ray1->setPen(rayPen);

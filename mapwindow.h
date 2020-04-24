@@ -44,6 +44,7 @@ class MapWindow : public QMainWindow
         QLabel* positionLabel;
         QLabel* lengthLabel;
         QLabel* distanceLabel;
+        QLabel* resolutionLabel;
 
 
 

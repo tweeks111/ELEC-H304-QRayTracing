@@ -8,20 +8,22 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     }
     transmitter->setPos(mapscene->getTransmitter()->pos());
     this->resolution=mapscene->resolution;
-    this->size=1000;
+    this->pixelResolution=mapscene->pixelResolution;
+    this->pixelPerMeter=mapscene->pixelPerMeter;
+    this->lengthInMeter=mapscene->lengthInMeter;
     this->ratio=mapscene->ratio;
     T=128;
-    setSceneRect(0,0,ratio*size,size);
+    setSceneRect(0,0,ratio*pixelResolution,pixelResolution);
     gridColor=Qt::lightGray;
     gridPen.setColor(gridColor);
     drawRect();
     drawWalls();
     addItem(transmitter);
-    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(size*ratio-2*size/20,size-2*size/20,size*ratio-size/20,size-2*size/20);
-    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(size*ratio-2*size/20,size-1.8*size/20,size*ratio-2*size/20,size-2.2*size/20);
-    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(size*ratio-size/20,size-1.8*size/20,size*ratio-size/20,size-2.2*size/20);
+    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2*pixelPerMeter,pixelResolution*ratio-pixelPerMeter,pixelResolution-2*pixelPerMeter);
+    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-1.8*pixelPerMeter,pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2.2*pixelPerMeter);
+    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(pixelResolution*ratio-pixelPerMeter,pixelResolution-1.8*pixelPerMeter,pixelResolution*ratio-pixelPerMeter,pixelResolution-2.2*pixelPerMeter);
     QGraphicsTextItem* scaleText = new QGraphicsTextItem("1m");
-    scaleText->setPos(size*ratio-2*size/20,size-2*size/20);
+    scaleText->setPos(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2*pixelPerMeter);
     scaleText->setFont(QFont("Helvetica",20));
     addItem(scaleLine1);
     addItem(scaleLine2);
@@ -40,15 +42,15 @@ void SimGraphicsScene::drawWalls()
 }
 
 void SimGraphicsScene::drawRect(){
-    float frameNb = 20/resolution.toFloat();
-    float rectSize = size/frameNb;
+    float frameNb = lengthInMeter/resolution.toFloat();
+    float rectSize = pixelResolution/frameNb;
     for(int j=0;j<ratio*frameNb;j++){
         for(int i =0;i<frameNb;i++){
            QGraphicsRectItem* rect = new QGraphicsRectItem(j*rectSize,i*rectSize,rectSize,rectSize);
            rectList.push_back(rect);
            rect->setPen(gridPen);
-           int R = QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*size);
-           int G = 255-QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*size);
+           int R = QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*pixelResolution);
+           int G = 255-QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*pixelResolution);
            rect->setBrush(QColor(R,G,0,T));
            addItem(rect);
            update();

@@ -31,6 +31,9 @@ class MapGraphicsScene : public QGraphicsScene
         QColor gridColor;
         QString resolution;
         int ratio;
+        int lengthInMeter;
+        int pixelResolution;
+        int pixelPerMeter;
         QList<QGraphicsItem*> getItems();
         QList<Wall*> getWalls();
         Transmitter* getTransmitter();
@@ -40,7 +43,7 @@ protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
-    int size;
+
     QPen gridPen;
     QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
     QGraphicsLineItem* tempLine = nullptr;

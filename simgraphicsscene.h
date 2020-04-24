@@ -18,8 +18,10 @@ public:
 public slots:
     void setRectTransparency(int value);
 private:
-    int size;
     int ratio;
+    int lengthInMeter;
+    int pixelPerMeter;
+    int pixelResolution;
     int T;
     QPen gridPen;
     QList <QGraphicsLineItem*> gridLines;

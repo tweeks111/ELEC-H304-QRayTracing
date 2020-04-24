@@ -135,6 +135,9 @@ void MapWindow::addLabelsToLabelbar(){
     distanceLabel = new QLabel("TX/RX Distance : 0 cm");
         connect(scene,&MapGraphicsScene::sendDistance,distanceLabel,&QLabel::setText);
     labelBar->addWidget(distanceLabel);
+    labelBar->addSeparator();
+    resolutionLabel = new QLabel(QString::number(scene->lengthInMeter*scene->ratio)+"m x "+QString::number(scene->lengthInMeter)+"m");
+    labelBar->addWidget(resolutionLabel);
 }
 
 void MapWindow::addActionsToMenubar()

@@ -9,7 +9,7 @@ Wall::Wall(QGraphicsItem *parent) : QGraphicsLineItem(parent)
 {
     QPen pen(Qt::blue);
     this->thickness=15;
-    pen.setWidth(1+this->thickness/2);
+    pen.setWidth(this->thickness/2);
     setPen(pen);
     //setAcceptHoverEvents(true);
 }
@@ -35,7 +35,7 @@ Wall::Wall(QLineF line,int thickness,QString material,QGraphicsItem *parent) : Q
         this->relPermittivity=2.25;
         this->conductivity=0.04;
     }
-    pen.setWidth(1+this->thickness/2);
+    pen.setWidth(this->thickness/2);
     setPen(pen);
     computeCoef(5e9);
     //setAcceptHoverEvents(true);
@@ -95,13 +95,13 @@ void Wall::computeCoef(qreal frequency){
 
 std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
 {
-    qreal incAngleRad=incAngle*pi/180;
+    qreal incAngleRad=incAngle*pi/180;    // incAngle is in degrees => rad
     qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
-    qreal s = thickness/cos(tranAngle);
-    std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
+    qreal s = thickness/(100*cos(tranAngle));  // thickness is in cm => /100
+    std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
 
     std::complex<qreal> a(0,-betam*s);
-    std::complex<qreal> b(0,beta0*2*s*sin(incAngle)*sin(tranAngle));
+    std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
     return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2)*exp(2.0*a)*exp(b));
 
 }
@@ -109,11 +109,10 @@ std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
 {
     qreal incAngleRad=incAngle*pi/180;
     qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
-    qreal s = thickness/cos(tranAngle);
-    std::complex<qreal> R = ((Z*cos(incAngle)-Z0*cos(tranAngle))/(Z*cos(incAngle)+Z0*cos(tranAngle)));
-
+    qreal s = thickness/(100*cos(tranAngle));
+    std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
     std::complex<qreal> a(0,-2*betam*s);
-    std::complex<qreal> b(0,beta0*2*s*sin(incAngle)*sin(tranAngle));
+    std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
     return (R + (1.0-pow(R,2.0))*(R*exp(a)*exp(b))/(1.0-pow(R,2.0)*exp(a)*exp(b)));
 
 }
