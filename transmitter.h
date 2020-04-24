@@ -9,9 +9,12 @@ class Transmitter : public QGraphicsPixmapItem
     public:
         Transmitter(QGraphicsItem *parent=nullptr);
         Transmitter(Transmitter* transmitter);
-        int frequency=5e6;
+        qreal frequency=5e9;
+        qreal beta0=0;
         qreal power_dbm=20;
+        qreal power;
         qreal Ra = 71;
+        qreal he =0;
         qreal Gtx = 16/(3*3.14159);   // pas de pertes => Gtx = Dtx car rendement =1
     private :
         QImage image;

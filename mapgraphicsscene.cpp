@@ -2,6 +2,7 @@
 #include "mapgraphicsscene.h"
 #include "mapgraphicsscene.h"
 
+
 MapGraphicsScene::MapGraphicsScene(){
     this->size=1000;
     this->ratio=1;
@@ -343,7 +344,7 @@ void MapGraphicsScene::save()
 {
     QDateTime actualTime;
     QString date = actualTime.currentDateTime().toString("dd-MM-yyyy_hh-mm-ss");
-    QString fileName= QFileDialog::getSaveFileName(nullptr, tr("Open File"), QCoreApplication::applicationDirPath()+"/saves/maps/MAP"+date, "Ray File (*.ray)" );
+    QString fileName= QFileDialog::getSaveFileName(nullptr, tr("Open File"), QCoreApplication::applicationDirPath()+"/saves/MAP"+date, "Ray File (*.ray)" );
     QFile file;
     if (!fileName.isNull())
         {
@@ -402,7 +403,7 @@ void MapGraphicsScene::load()
     }
     if(!stop){
         QString fileName = QFileDialog::getOpenFileName(nullptr,
-                                                        tr("Open File"),QCoreApplication::applicationDirPath()+"/saves/maps",
+                                                        tr("Open File"),QCoreApplication::applicationDirPath()+"/saves/",
                                                         tr("Ray File (*.ray)"));
         if (fileName.isEmpty())
             return;
@@ -486,11 +487,16 @@ std::complex<qreal> MapGraphicsScene::checkWalls(Ray *ray)
 void MapGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
+        std::complex<qreal> En=0;
         foreach(Ray* ray,rayList) removeItem(ray);
         rayList.clear();
         QPen rayPen(QColor(106, 224, 27));
         ray1= new Ray(QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y()));
         ray1->coef*=checkWalls(ray1);
+        qDebug()<<ray1;
+        qreal rayLength = ray1->line().length()*20/size;
+        std::complex<qreal> exponent(0,-transmitter->beta0);
+        En+=ray1->coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*rayLength)/rayLength;
         ray1->setPen(rayPen);
         //qDebug()<<sqrt(pow(real(ray1->coef),2)+pow(imag(ray1->coef),2));
         rayList.push_back(ray1);
