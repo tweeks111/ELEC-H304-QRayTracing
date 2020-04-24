@@ -54,6 +54,7 @@ private:
     QList <Ray*> rayList;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
+    QGraphicsTextItem* receiverPower=nullptr;
     Ray* ray1 = nullptr;
     bool raysAreHidden;
     bool pointsAreHidden;

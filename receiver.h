@@ -9,6 +9,7 @@ class Receiver : public QGraphicsPixmapItem
     public:
         Receiver(QGraphicsItem* parent=nullptr);
         Receiver(Receiver const &Receiver);
+        qreal power=0;
     private :
         QImage image;
         bool moving;

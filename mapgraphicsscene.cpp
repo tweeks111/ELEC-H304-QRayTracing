@@ -201,10 +201,13 @@ void MapGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         transmitter->setPos(event->scenePos().x(),event->scenePos().y());
         if(receiver){
             drawRXTX();
+            receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
         }
     }
     if(receiverActivated){
         receiver->setPos(event->scenePos().x(),event->scenePos().y());
+        receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
+        receiverPower->setPos(event->scenePos().x()+pixelPerMeter,event->scenePos().y()-pixelPerMeter);
         if(transmitter){
             drawRXTX();
         }
@@ -245,6 +248,7 @@ void MapGraphicsScene::placeReceiver()
     if(receiver){
         receiverActivated=false;
         removeItem(receiver);
+        removeItem(receiverPower);
         receiver=nullptr;
         if(rayList.size()!=0){
             foreach(QGraphicsLineItem* ray,rayList) removeItem(ray);
@@ -257,8 +261,13 @@ void MapGraphicsScene::placeReceiver()
         transmitterActivated=false;
         receiverActivated=true;
         receiver=new Receiver();
+        receiverPower=new QGraphicsTextItem;
+        receiverPower->setScale(2);
+        receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
+        receiverPower->setPos(receiver->x()+pixelPerMeter,receiver->y()-pixelPerMeter);
         pointsAreHidden=true;
         addItem(receiver);
+        addItem(receiverPower);
         draw(resolution);
         receiver->isMoving(true);
     }
@@ -296,7 +305,7 @@ void MapGraphicsScene::clearItems()
         wallList.clear();
     }
     if(transmitter){ removeItem(transmitter);transmitter=nullptr;}
-    if(receiver){ removeItem(receiver);receiver=nullptr;}
+    if(receiver){ removeItem(receiver);receiver=nullptr;removeItem(receiverPower);}
     if(rayList.size()!=0){
         foreach(QGraphicsLineItem* ray,rayList) removeItem(ray);
         rayList.clear();
@@ -493,11 +502,10 @@ std::complex<qreal> MapGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF Line
     return En;
 }
 
-
 void MapGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
-        float power = 0;
+        qreal power = 0;
         std::complex<qreal> En=0;
         foreach(Ray* ray,rayList) removeItem(ray);
         rayList.clear();
@@ -506,7 +514,7 @@ void MapGraphicsScene::drawRays()
         ray1= new Ray(LineTxToRx);
         ray1->coef*=checkWalls(ray1);
         En = EnCalcultor({ray1},LineTxToRx);
-        power += (1/(8*transmitter->Ra))*abs(pow(transmitter->he*En,2));
+        power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
         ray1->setPen(rayPen);
         rayList.push_back(ray1);
         addItem(ray1);
@@ -529,7 +537,7 @@ void MapGraphicsScene::drawRays()
                     ray2->setPen(rayPen);
                     ray3->setPen(rayPen);
                     En = EnCalcultor({ray2,ray3},lineRXtoMP1);
-                    power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
+                    power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
                     addItem(ray2);addItem(ray3);
                     }
                 for(Wall* w2:wallList){
@@ -556,7 +564,7 @@ void MapGraphicsScene::drawRays()
                                 rayList.push_back(lineIP3toTX);rayList.push_back(lineRXtoIP2);rayList.push_back(lineIP2toIP3);
                                 lineIP3toTX->setPen(rayPen);lineRXtoIP2->setPen(rayPen);lineIP2toIP3->setPen(rayPen);
                                 En = EnCalcultor({lineIP3toTX,lineRXtoIP2,lineIP2toIP3},lineRXtoMP2);
-                                power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
+                                power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
                                 addItem(lineIP3toTX);addItem(lineRXtoIP2);addItem(lineIP2toIP3);
                             }
 
@@ -594,7 +602,7 @@ void MapGraphicsScene::drawRays()
                                             rayList.push_back(lineIP6toTX);rayList.push_back(lineIP5toIP6);rayList.push_back(lineIP4toIP5);rayList.push_back(lineRXtoIP4);
                                             lineIP6toTX->setPen(rayPen);lineIP5toIP6->setPen(rayPen);lineIP4toIP5->setPen(rayPen);lineRXtoIP4->setPen(rayPen);
                                             En = EnCalcultor({lineIP6toTX,lineIP5toIP6,lineIP4toIP5,lineRXtoIP4},lineRXtoMP3);
-                                            power += (1/8*transmitter->Ra)*abs(pow(transmitter->he*En,2));
+                                            power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
                                             addItem(lineIP6toTX);addItem(lineIP5toIP6);addItem(lineIP4toIP5);addItem(lineRXtoIP4);
 
                                         }
@@ -611,7 +619,7 @@ void MapGraphicsScene::drawRays()
             }
 
         }
-        qDebug()<<10*log10(power/1e-3);
+        receiver->power=10*log10(power/1e-3);
     }
 
 }

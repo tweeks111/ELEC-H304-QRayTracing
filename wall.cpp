@@ -102,7 +102,7 @@ std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
 
     std::complex<qreal> a(0,-betam*s);
     std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
-    return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2)*exp(2.0*a)*exp(b));
+    return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2.0)*exp(2.0*a)*exp(b));
 
 }
 std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
