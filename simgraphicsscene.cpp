@@ -42,6 +42,7 @@ void SimGraphicsScene::drawWalls()
 }
 
 void SimGraphicsScene::drawRect(){
+    Receiver receiver = new Receiver();
     float frameNb = lengthInMeter/resolution.toFloat();
     float rectSize = pixelResolution/frameNb;
     for(int j=0;j<ratio*frameNb;j++){
@@ -49,13 +50,14 @@ void SimGraphicsScene::drawRect(){
            QGraphicsRectItem* rect = new QGraphicsRectItem(j*rectSize,i*rectSize,rectSize,rectSize);
            rectList.push_back(rect);
            rect->setPen(gridPen);
-           int R = QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*pixelResolution);
-           int G = 255-QLineF(rect->rect().center(),transmitter->pos()).length()*255/(ratio*pixelResolution);
+           receiver.setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
+           qreal ratio = (transmitter->power_dbm-receiver.power)/(transmitter->power_dbm+82);
+           int R = ratio*255;
+           int G = 255*(1-ratio);
            rect->setBrush(QColor(R,G,0,T));
            addItem(rect);
            update();
         }
-
     }
 }
 
