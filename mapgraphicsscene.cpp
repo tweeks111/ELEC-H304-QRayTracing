@@ -481,11 +481,11 @@ std::complex<qreal> MapGraphicsScene::checkWalls(Ray *ray)
 
     QPointF intersectPoint;
     std::complex<qreal> coef=1;
-    for(Wall* w1:wallList){
-        if(w1->line().intersects(ray->line(),&intersectPoint)==QLineF::BoundedIntersection){
+    for(Wall* w:wallList){
+        if(w->line().intersects(ray->line(),&intersectPoint)==QLineF::BoundedIntersection){
             if(intersectPoint!=ray->line().p1()&&intersectPoint!=ray->line().p2()){  //Afin d'éviter que les réflexions soient considérées commes des intersections
-                qreal angle = incidenceAngle(ray->line(),w1);
-                coef*=w1->computeTXCoef(angle);
+                qreal angle = incidenceAngle(ray->line(),w);
+                coef*=w->computeTXCoef(angle);
             }
         }
     }

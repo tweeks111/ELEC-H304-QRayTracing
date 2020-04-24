@@ -50,16 +50,22 @@ Wall::Wall(Wall*wall){
     QPen pen;
     if(material=="Concrete"){
         pen.setColor(QColor(72, 92, 99));
+        this->relPermittivity=5;
+        this->conductivity=0.014;
     }
     else if(material=="Bricks"){
         pen.setColor(QColor(227, 105, 11));
+        this->relPermittivity=4.6;
+        this->conductivity=0.02;
     }
     else if(material=="Wood"){
         pen.setColor(QColor(107, 80, 59));
+        this->relPermittivity=2.25;
+        this->conductivity=0.04;
     }
     pen.setWidth(1+this->thickness/2);
     setPen(pen);
-
+    computeCoef(5e9);
 
 }
 
@@ -96,7 +102,7 @@ void Wall::computeCoef(qreal frequency){
 std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
 {
     qreal incAngleRad=incAngle*pi/180;    // incAngle is in degrees => rad
-    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
+    qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));
     qreal s = thickness/(100*cos(tranAngle));  // thickness is in cm => /100
     std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
 
