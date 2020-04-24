@@ -24,7 +24,8 @@ class MapWindow : public QMainWindow
     // ToolBar
         QMenuBar* menuBar;
         QToolBar* toolBar;
-        QToolBar* labelBar;
+        QToolBar* toolBar2;
+        QStatusBar* labelBar;
     // Actions
         QAction* receiverBtn;
         QAction* transmitterBtn;

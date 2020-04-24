@@ -42,6 +42,8 @@ void MapWindow::showEvent(QShowEvent *event)
 void MapWindow::addActionsToToolbar(){
     toolBar= new QToolBar("Tools");
     addToolBar(Qt::TopToolBarArea,toolBar);
+    toolBar2=new QToolBar("Setings");
+    addToolBar(Qt::BottomToolBarArea,toolBar2);
         transmitterBtn = new QAction("&Place Transmitter");
             connect(transmitterBtn,&QAction::triggered,scene,&MapGraphicsScene::placeTransmitter);
             transmitterBtn->setIcon(QIcon("icons/TXicon.png"));
@@ -85,12 +87,12 @@ void MapWindow::addActionsToToolbar(){
         toolBar->addSeparator();
 
         QLabel* resolutionLabel = new QLabel("Resolution : ");
-        toolBar->addWidget(resolutionLabel);
+        toolBar2->addWidget(resolutionLabel);
         resolutionBox=new QComboBox;
         resolutionBox->addItem(QString::number(1));resolutionBox->addItem(QString::number(0.5));resolutionBox->addItem(QString::number(0.25));
             connect(resolutionBox,&QComboBox::currentTextChanged,scene,&MapGraphicsScene::draw);
-        toolBar->addWidget(resolutionBox);
-        toolBar->addSeparator();
+        toolBar2->addWidget(resolutionBox);
+        toolBar2->addSeparator();
         QLabel *wallThicknessLabel= new QLabel("Wall Thichkness : ");
         QSlider* slider = new QSlider(Qt::Horizontal);
         slider->setMaximumWidth(100);
@@ -100,14 +102,14 @@ void MapWindow::addActionsToToolbar(){
         slider->setRange(1,30);
         slider->setTickInterval(1);
         slider->setValue(15);
-        toolBar->addWidget(wallThicknessLabel);
-        toolBar->addWidget(slider);
-        toolBar->addWidget(wallThickness);
+        toolBar2->addWidget(wallThicknessLabel);
+        toolBar2->addWidget(slider);
+        toolBar2->addWidget(wallThickness);
         materialBox=new QComboBox;
         materialBox->addItem("Bricks");materialBox->addItem("Concrete");materialBox->addItem("Wood");
             connect(materialBox,&QComboBox::currentTextChanged,scene,&MapGraphicsScene::setMaterial);
-        toolBar->addWidget(materialBox);
-        toolBar->addSeparator();
+        toolBar2->addWidget(materialBox);
+        toolBar2->addSeparator();
         runBtn = new QToolButton();
         runAction = new QAction("Run Simulation");
         runAction->setIcon(QIcon("icons/runicon.png"));
@@ -122,22 +124,21 @@ void MapWindow::addActionsToToolbar(){
 
 void MapWindow::addLabelsToLabelbar(){
 //Label Bar
-    labelBar=new QToolBar("Labels");
-    addToolBar(Qt::BottomToolBarArea,labelBar);
+    labelBar=new QStatusBar();
+    this->setStatusBar(labelBar);
     positionLabel = new QLabel("x = 0 cm y = 0 cm");
         connect(scene,&MapGraphicsScene::sendPosition,positionLabel,&QLabel::setText);
-    labelBar->addWidget(positionLabel);
-    labelBar->addSeparator();
+    labelBar->addPermanentWidget(positionLabel);
     lengthLabel = new QLabel("Length : 0 cm");
         connect(scene,&MapGraphicsScene::sendLength,lengthLabel,&QLabel::setText);
-    labelBar->addWidget(lengthLabel);
-    labelBar->addSeparator();
+    labelBar->addPermanentWidget(lengthLabel);
+
     distanceLabel = new QLabel("TX/RX Distance : 0 cm");
         connect(scene,&MapGraphicsScene::sendDistance,distanceLabel,&QLabel::setText);
-    labelBar->addWidget(distanceLabel);
-    labelBar->addSeparator();
+    labelBar->addPermanentWidget(distanceLabel);
     resolutionLabel = new QLabel(QString::number(scene->lengthInMeter*scene->ratio)+"m x "+QString::number(scene->lengthInMeter)+"m");
-    labelBar->addWidget(resolutionLabel);
+    labelBar->addPermanentWidget(resolutionLabel);
+
 }
 
 void MapWindow::addActionsToMenubar()
