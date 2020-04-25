@@ -5,6 +5,7 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
 {
     scene = new SimGraphicsScene(mapscene);
     view = new QGraphicsView(scene);
+    view->setRenderHint(QPainter::Antialiasing, true);
     timer = new QTimer();
     //timer->setInterval(1);
     toolBar= new QToolBar("Tools");
@@ -20,12 +21,28 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     slider->setTickInterval(1);
     slider->setValue(128);
     connect(slider,&QSlider::valueChanged,scene,&SimGraphicsScene::setRectTransparency);
+
+    QSlider* scaleSlider = new QSlider(Qt::Horizontal);
+    scaleSlider->setMaximumWidth(100);
+    scaleSlider->setMinimumWidth(50);
+    scaleSlider->setRange(40,100);
+    scaleSlider->setTickInterval(5);
+    scaleSlider->setValue(70);
+    connect(scaleSlider,&QSlider::valueChanged,scene,&SimGraphicsScene::changeColorScale);
+
+    toolBar->addWidget(new QLabel("Scale: "));
+    toolBar->addWidget(scaleSlider);
+    toolBar->addSeparator();
+    toolBar->addWidget(new QLabel("Transparency: "));
     toolBar->addWidget(slider);
+    toolBar->addSeparator();
+
+
+
     loadBar = new QProgressBar;
     loadBar->setRange(0,100);
     loadBar->setValue(0);
-    toolBar->addWidget(loadBar);
-
+    loadAction = toolBar->addWidget(loadBar);
     this->setCentralWidget(view);
     this->view->setRenderHint(QPainter::Antialiasing, true);
     this->view->fitInView(scene->itemsBoundingRect(),Qt::KeepAspectRatio);
@@ -48,8 +65,6 @@ void SimWindow::addMenuBar(){
         saveFile->setShortcut(QKeySequence("Ctrl+S"));
         menuFile->addAction(saveFile);
         menuFile->addSeparator();
-
-    QMenu *menuView = menuBar->addMenu("&View");
 
 }
 
@@ -87,6 +102,7 @@ void SimWindow::updateBar()
 {
     if(i>scene->lengthInMeter/scene->resolution.toFloat()){
         timer->stop();
+        toolBar->removeAction(loadAction);
     }
     else{
         scene->drawRect(i,j);

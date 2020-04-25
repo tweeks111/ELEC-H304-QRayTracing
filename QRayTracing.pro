@@ -5,6 +5,7 @@ HEADERS += \
     point.h \
     ray.h \
     receiver.h \
+    receiverrect.h \
     simgraphicsscene.h \
     simwindow.h \
     transmitter.h \
@@ -18,6 +19,7 @@ SOURCES += \
     point.cpp \
     ray.cpp \
     receiver.cpp \
+    receiverrect.cpp \
     simgraphicsscene.cpp \
     simwindow.cpp \
     transmitter.cpp \

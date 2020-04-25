@@ -32,7 +32,7 @@ void MainWindow::addSimTab()
     }
     else{
         QMessageBox msgBox;
-        msgBox.setText("The transmitter must be added to the scene in order to make a simulation !");
+        msgBox.setText("A transmitter must be added to the scene in order to perform a simulation !");
         msgBox.setStandardButtons( QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         int ret = msgBox.exec();

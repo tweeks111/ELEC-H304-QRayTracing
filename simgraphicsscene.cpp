@@ -34,24 +34,43 @@ void SimGraphicsScene::drawWalls()
 void SimGraphicsScene::drawRect(int i,int j){
         float frameNb = lengthInMeter/resolution.toFloat();
         float rectSize = pixelResolution/frameNb;
-        QGraphicsRectItem* rect = new QGraphicsRectItem(j*rectSize,i*rectSize,rectSize,rectSize);
-        rectList.push_back(rect);
-        rect->setPen(gridPen);
         receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
-        drawRays();
-        qreal ratioPower = (receiver->power-scaleMin)/(scaleMax-scaleMin);
-        if (ratioPower >1){
-            ratioPower =1;
-        }
-        else if(ratioPower<0){
-            ratioPower=0;
-        }
-        int G = ratioPower*255;
-        int R = 255*(1-ratioPower);
-        rect->setBrush(QColor(R,G,0,T));
+        qreal power = drawRays();
+        ReceiverRect* rect = new ReceiverRect(j*rectSize,i*rectSize,rectSize,rectSize,power);
+        rectList.push_back(rect);
+        rect->setPen(Qt::NoPen);
+
+        rect->setBrush(colorRect(rect->power));
         addItem(rect);
         update();
 
+}
+
+QColor SimGraphicsScene::colorRect(qreal pow)
+{
+    int R=255;int G=255;
+    qreal ratioPower = (pow-scaleMin)/(scaleMax-scaleMin);
+    if (ratioPower >1){
+        ratioPower =1;
+    }
+    else if(ratioPower<0){
+        ratioPower=0;
+    }
+
+    if(ratioPower<0.5){
+        R=255;
+        G=ratioPower*2*255;
+    }
+    else{
+        R=(1-ratioPower)*255*2;
+        G=255;
+    }
+
+    /*
+    int G = ratioPower*255;
+    int R = 255*(1-ratioPower);
+    */
+    return QColor(R,G,0,T);
 }
 
 
@@ -63,11 +82,22 @@ void SimGraphicsScene::setRectTransparency(int value){
         rect->setBrush(color);
     }
     grad->setColorAt(0,QColor(0,255,0,value));
+    grad->setColorAt(0.5,QColor(255,255,0,value));
     grad->setColorAt(1,QColor(255,0,0,value));
     scaleRect->setBrush(*grad);
 }
 
-void SimGraphicsScene::drawRays()
+void SimGraphicsScene::changeColorScale(int value)
+{
+    this->scaleMin=-value;
+    foreach(ReceiverRect* rect, rectList){
+        rect->setBrush(colorRect(rect->power));
+    }
+    scaleRect->setBrush(*grad);
+    maxScaleText->setPlainText(QString::number(-value));
+}
+
+qreal SimGraphicsScene::drawRays()
 {
     if(!raysAreHidden){
         qreal power = 0;
@@ -171,6 +201,7 @@ void SimGraphicsScene::drawRays()
         }
         receiver->power=10*log10(power/1e-3);
     }
+    return receiver->power;
 
 }
 
@@ -200,6 +231,7 @@ void SimGraphicsScene::drawScales()
     scaleRect->setPen(QPen(Qt::black,2));
     grad = new QLinearGradient(scaleRect->rect().topLeft(),scaleRect->rect().bottomRight());
     grad->setColorAt(0,QColor(0,255,0,T));
+    grad->setColorAt(0.5,QColor(255,255,0,T));
     grad->setColorAt(1,QColor(255,0,0,T));
     scaleRect->setBrush(*grad);
     addItem(scaleRect);
@@ -208,7 +240,7 @@ void SimGraphicsScene::drawScales()
     minScaleText->setPlainText(QString::number(scaleMax));
     minScaleText->setScale(2);
     minScaleText->setPos(pixelResolution*ratio-5.6*pixelPerMeter,pixelResolution-pixelPerMeter);
-    QGraphicsTextItem* maxScaleText = new QGraphicsTextItem();
+    maxScaleText = new QGraphicsTextItem();
     scaleList.push_back(maxScaleText);
     maxScaleText->setPlainText(QString::number(scaleMin));
     maxScaleText->setScale(2);
@@ -219,6 +251,7 @@ void SimGraphicsScene::drawScales()
     addItem(transmitter);
     scaleList.push_back(transmitter);
 }
+
 
 
 QPointF SimGraphicsScene::mirrorPointMaker(QLineF wline, QPointF initialPoint)

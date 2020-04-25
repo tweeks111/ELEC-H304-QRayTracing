@@ -10,6 +10,7 @@
 #include "transmitter.h"
 #include "receiver.h"
 #include "ray.h"
+#include "receiverrect.h"
 
 
 class SimGraphicsScene : public QGraphicsScene
@@ -24,22 +25,24 @@ public:
     int lengthInMeter;
     int pixelPerMeter;
     void drawRect(int i,int j);
-    void drawRays();
+    qreal drawRays();
     void drawScales();
     bool transmitterActivated;
     bool receiverActivated;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
-
+    QColor colorRect(qreal power);
 signals:
     void refreshLoading(int value);
 public slots:
     void setRectTransparency(int value);
+    void changeColorScale(int value);
 
 private:
     int scaleMax=-20;
-    int scaleMin=-82;
+    int scaleMin=-70;
     QList <Ray*> rayList;
+    QGraphicsTextItem*  maxScaleText;
     QList <QGraphicsItem*> scaleList;
     int pixelResolution;
     QGraphicsTextItem* receiverPower=nullptr;
@@ -52,7 +55,7 @@ private:
     std::complex<qreal> EnCalcultor(QList <Ray*> rays, QLineF mirrorToRx);
     QList <QGraphicsLineItem*> gridLines;
     QList <Wall*> wallList;
-    QList <QGraphicsRectItem*> rectList;
+    QList <ReceiverRect*> rectList;
     Ray* ray1 = nullptr;
     bool raysAreHidden;
     bool isSameSide(Wall *w);

@@ -32,6 +32,7 @@ private:
         QProgressBar* loadBar;
         int transparency;
         QTimer* timer;
+        QAction* loadAction;
         SimGraphicsScene* scene;
         QGraphicsView* view;
         void save();
