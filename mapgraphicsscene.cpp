@@ -436,7 +436,6 @@ void MapGraphicsScene::load()
                 QString material;
                 in >> line >> thickness >> material;
                 Wall* wall =new Wall(line,thickness,material);
-                wall->computeCoef(5e9);
                 wallList.push_back(wall);
                 addItem(wall);
             }
@@ -456,6 +455,11 @@ void MapGraphicsScene::load()
                 in>>pos;
                 receiver->setPos(pos);
                 addItem(receiver);
+                receiverPower=new QGraphicsTextItem;
+                receiverPower->setScale(2);
+                receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
+                receiverPower->setPos(receiver->x()+pixelPerMeter,receiver->y()-pixelPerMeter);
+                addItem(receiverPower);
             }
         file.close();
         draw(resolution);
@@ -508,8 +512,9 @@ void MapGraphicsScene::drawRays()
     if(!raysAreHidden){
         qreal power = 0;
         std::complex<qreal> En=0;
-        foreach(Ray* ray,rayList) removeItem(ray);
-        rayList.clear();
+        if(rayList.size()!=0){
+            foreach(Ray* ray, rayList) removeItem(ray);
+            rayList.clear();};
         QPen rayPen(QColor(106, 224, 27));
         QLineF LineTxToRx = QLineF(transmitter->x(),transmitter->y(),receiver->x(),receiver->y());
         ray1= new Ray(LineTxToRx);
@@ -520,7 +525,6 @@ void MapGraphicsScene::drawRays()
         rayList.push_back(ray1);
         addItem(ray1);
         for(Wall* w1:wallList){
-
             if(isSameSide(w1)){
                 QPointF mirrorPoint = mirrorPointMaker(w1->line(), transmitter->pos());
                 QPointF intersectPoint;
