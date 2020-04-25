@@ -8,6 +8,7 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     timer = new QTimer();
     //timer->setInterval(1);
     toolBar= new QToolBar("Tools");
+    toolBar->setMovable(false);
     addToolBar(Qt::TopToolBarArea,toolBar);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateBar()));
 
