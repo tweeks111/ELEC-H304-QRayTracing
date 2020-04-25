@@ -32,9 +32,13 @@ private:
     int ratio;
     int lengthInMeter;
     int pixelPerMeter;
+    int scaleMax=-20;
+    int scaleMin=-82;
     QList <Ray*> rayList;
     int pixelResolution;
     QGraphicsTextItem* receiverPower=nullptr;
+    QLinearGradient* grad;
+    QGraphicsRectItem *scaleRect;
     int T;
     MapGraphicsScene* mapGraphicsScene;
     QPen gridPen;

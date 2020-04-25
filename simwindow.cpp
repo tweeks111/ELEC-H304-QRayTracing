@@ -20,7 +20,6 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     toolBar->addWidget(slider);
     toolBar->addWidget(transparencyLabel);
 
-
     this->setCentralWidget(view);
     this->view->setRenderHint(QPainter::Antialiasing, true);
     this->centralWidget()->setContentsMargins(0,0,0,0);
@@ -44,6 +43,7 @@ void SimWindow::addMenuBar(){
 
     QMenu *menuView = menuBar->addMenu("&View");
     QMenu *menuViewModes = menuView->addMenu("Change background color");
+
 
 }
 

@@ -14,11 +14,13 @@ class Wall : public QGraphicsLineItem{
         int thickness;
         qreal relPermittivity;
         qreal conductivity;
+        std::complex<qreal> gammam;
+        qreal alpham;
         qreal betam;
         qreal beta0;
         std::complex<qreal> Z;
         qreal Z0=376.730;
-
+        void computeCoef(qreal frequency);
         QString material;
         bool lineActivated;
         std::complex<qreal> computeTXCoef(qreal incAngle);
@@ -30,7 +32,7 @@ class Wall : public QGraphicsLineItem{
         void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
         */
 private:
-        void computeCoef(qreal frequency);
+
 
 };
 

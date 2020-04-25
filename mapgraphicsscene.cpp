@@ -436,6 +436,7 @@ void MapGraphicsScene::load()
                 QString material;
                 in >> line >> thickness >> material;
                 Wall* wall =new Wall(line,thickness,material);
+                wall->computeCoef(5e9);
                 wallList.push_back(wall);
                 addItem(wall);
             }

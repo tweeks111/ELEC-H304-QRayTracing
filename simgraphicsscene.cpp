@@ -21,16 +21,36 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     drawRect();
     drawWalls();
     addItem(transmitter);
-    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2*pixelPerMeter,pixelResolution*ratio-pixelPerMeter,pixelResolution-2*pixelPerMeter);
-    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-1.8*pixelPerMeter,pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2.2*pixelPerMeter);
-    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(pixelResolution*ratio-pixelPerMeter,pixelResolution-1.8*pixelPerMeter,pixelResolution*ratio-pixelPerMeter,pixelResolution-2.2*pixelPerMeter);
+    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1*pixelPerMeter);
+    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
+    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(pixelResolution*ratio-6*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
     QGraphicsTextItem* scaleText = new QGraphicsTextItem("1m");
-    scaleText->setPos(pixelResolution*ratio-2*pixelPerMeter,pixelResolution-2*pixelPerMeter);
+    scaleText->setPos(pixelResolution*ratio-7.1*pixelPerMeter,pixelResolution-1*pixelPerMeter);
     scaleText->setFont(QFont("Helvetica",20));
-    addItem(scaleLine1);
-    addItem(scaleLine2);
-    addItem(scaleLine3);
-    addItem(scaleText);
+    addItem(scaleLine1);addItem(scaleLine2);addItem(scaleLine3);addItem(scaleText);
+
+
+
+    QGraphicsRectItem *backgroundScaleRect = new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
+    backgroundScaleRect->setBrush(Qt::white);
+    addItem(backgroundScaleRect);
+    scaleRect= new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
+    scaleRect->setPen(QPen(Qt::black,2));
+    grad = new QLinearGradient(scaleRect->rect().topLeft(),scaleRect->rect().bottomRight());
+    grad->setColorAt(0,QColor(0,255,0,T));
+    grad->setColorAt(1,QColor(255,0,0,T));
+    scaleRect->setBrush(*grad);
+    addItem(scaleRect);
+    QGraphicsTextItem* minScaleText = new QGraphicsTextItem();
+    minScaleText->setPlainText(QString::number(scaleMax));
+    minScaleText->setScale(2);
+    minScaleText->setPos(pixelResolution*ratio-5.6*pixelPerMeter,pixelResolution-pixelPerMeter);
+    QGraphicsTextItem* maxScaleText = new QGraphicsTextItem();
+    maxScaleText->setPlainText(QString::number(scaleMin));
+    maxScaleText->setScale(2);
+    maxScaleText->setPos(pixelResolution*ratio-1.7*pixelPerMeter,pixelResolution-pixelPerMeter);
+    addItem(minScaleText);addItem(maxScaleText);
+
 }
 
 void SimGraphicsScene::drawWalls()
@@ -53,9 +73,12 @@ void SimGraphicsScene::drawRect(){
            rect->setPen(gridPen);
            receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
            drawRays();
-           qreal ratioPower = abs((-51-receiver->power)/(-51+82));//(transmitter->power_dbm-receiver->power)/(transmitter->power_dbm+82);
+           qreal ratioPower = (receiver->power-scaleMin)/(scaleMax-scaleMin);
            if (ratioPower >1){
                ratioPower =1;
+           }
+           else if(ratioPower<0){
+               ratioPower=0;
            }
            int G = ratioPower*255;
            int R = 255*(1-ratioPower);
@@ -74,6 +97,9 @@ void SimGraphicsScene::setRectTransparency(int value){
         color.setAlpha(value);
         rect->setBrush(color);
     }
+    grad->setColorAt(0,QColor(0,255,0,value));
+    grad->setColorAt(1,QColor(255,0,0,value));
+    scaleRect->setBrush(*grad);
 }
 
 void SimGraphicsScene::drawRays()
