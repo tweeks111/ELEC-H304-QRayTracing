@@ -18,75 +18,40 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     gridColor=Qt::lightGray;
     gridPen.setColor(gridColor);
     raysAreHidden=false;
-    drawRect();
-    drawWalls();
-    addItem(transmitter);
-    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1*pixelPerMeter);
-    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
-    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(pixelResolution*ratio-6*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
-    QGraphicsTextItem* scaleText = new QGraphicsTextItem("1m");
-    scaleText->setPos(pixelResolution*ratio-7.1*pixelPerMeter,pixelResolution-1*pixelPerMeter);
-    scaleText->setFont(QFont("Helvetica",20));
-    addItem(scaleLine1);addItem(scaleLine2);addItem(scaleLine3);addItem(scaleText);
-
-
-
-    QGraphicsRectItem *backgroundScaleRect = new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
-    backgroundScaleRect->setBrush(Qt::white);
-    addItem(backgroundScaleRect);
-    scaleRect= new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
-    scaleRect->setPen(QPen(Qt::black,2));
-    grad = new QLinearGradient(scaleRect->rect().topLeft(),scaleRect->rect().bottomRight());
-    grad->setColorAt(0,QColor(0,255,0,T));
-    grad->setColorAt(1,QColor(255,0,0,T));
-    scaleRect->setBrush(*grad);
-    addItem(scaleRect);
-    QGraphicsTextItem* minScaleText = new QGraphicsTextItem();
-    minScaleText->setPlainText(QString::number(scaleMax));
-    minScaleText->setScale(2);
-    minScaleText->setPos(pixelResolution*ratio-5.6*pixelPerMeter,pixelResolution-pixelPerMeter);
-    QGraphicsTextItem* maxScaleText = new QGraphicsTextItem();
-    maxScaleText->setPlainText(QString::number(scaleMin));
-    maxScaleText->setScale(2);
-    maxScaleText->setPos(pixelResolution*ratio-1.7*pixelPerMeter,pixelResolution-pixelPerMeter);
-    addItem(minScaleText);addItem(maxScaleText);
-
 }
 
 void SimGraphicsScene::drawWalls()
 {
     if(wallList.size()!=0){
         foreach(QGraphicsItem *wall,wallList){
+            removeItem(wall);
             addItem(wall);
         }
     }
 
 }
 
-void SimGraphicsScene::drawRect(){
-    float frameNb = lengthInMeter/resolution.toFloat();
-    float rectSize = pixelResolution/frameNb;
-    for(int j=0;j<ratio*frameNb;j++){
-        for(int i =0;i<frameNb;i++){
-           QGraphicsRectItem* rect = new QGraphicsRectItem(j*rectSize,i*rectSize,rectSize,rectSize);
-           rectList.push_back(rect);
-           rect->setPen(gridPen);
-           receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
-           drawRays();
-           qreal ratioPower = (receiver->power-scaleMin)/(scaleMax-scaleMin);
-           if (ratioPower >1){
-               ratioPower =1;
-           }
-           else if(ratioPower<0){
-               ratioPower=0;
-           }
-           int G = ratioPower*255;
-           int R = 255*(1-ratioPower);
-           rect->setBrush(QColor(R,G,0,T));
-           addItem(rect);
-           update();
+void SimGraphicsScene::drawRect(int i,int j){
+        float frameNb = lengthInMeter/resolution.toFloat();
+        float rectSize = pixelResolution/frameNb;
+        QGraphicsRectItem* rect = new QGraphicsRectItem(j*rectSize,i*rectSize,rectSize,rectSize);
+        rectList.push_back(rect);
+        rect->setPen(gridPen);
+        receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
+        drawRays();
+        qreal ratioPower = (receiver->power-scaleMin)/(scaleMax-scaleMin);
+        if (ratioPower >1){
+            ratioPower =1;
         }
-    }
+        else if(ratioPower<0){
+            ratioPower=0;
+        }
+        int G = ratioPower*255;
+        int R = 255*(1-ratioPower);
+        rect->setBrush(QColor(R,G,0,T));
+        addItem(rect);
+        update();
+
 }
 
 
@@ -208,6 +173,53 @@ void SimGraphicsScene::drawRays()
     }
 
 }
+
+void SimGraphicsScene::drawScales()
+{
+    if(scaleList.size()!=0){
+        foreach(QGraphicsItem* item,scaleList) removeItem(item);
+        scaleList.clear();
+    }
+    QGraphicsLineItem* scaleLine1 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1*pixelPerMeter);
+    QGraphicsLineItem* scaleLine2 = new QGraphicsLineItem(pixelResolution*ratio-7*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-7*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
+    QGraphicsLineItem* scaleLine3 = new QGraphicsLineItem(pixelResolution*ratio-6*pixelPerMeter,pixelResolution-0.8*pixelPerMeter,pixelResolution*ratio-6*pixelPerMeter,pixelResolution-1.2*pixelPerMeter);
+    QGraphicsTextItem* scaleText = new QGraphicsTextItem("1m");
+    scaleList.push_back(scaleLine1);scaleList.push_back(scaleLine2);scaleList.push_back(scaleLine3);scaleList.push_back(scaleText);
+    scaleText->setPos(pixelResolution*ratio-7.1*pixelPerMeter,pixelResolution-1*pixelPerMeter);
+    scaleText->setFont(QFont("Helvetica",20));
+    addItem(scaleLine1);addItem(scaleLine2);addItem(scaleLine3);addItem(scaleText);
+
+
+
+    QGraphicsRectItem *backgroundScaleRect = new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
+    scaleList.push_back(backgroundScaleRect);
+    backgroundScaleRect->setBrush(Qt::white);
+    addItem(backgroundScaleRect);
+    scaleRect= new QGraphicsRectItem(pixelResolution*ratio-5*pixelPerMeter,pixelResolution-1.25*pixelPerMeter,4*pixelPerMeter,0.5*pixelPerMeter);
+    scaleList.push_back(scaleRect);
+    scaleRect->setPen(QPen(Qt::black,2));
+    grad = new QLinearGradient(scaleRect->rect().topLeft(),scaleRect->rect().bottomRight());
+    grad->setColorAt(0,QColor(0,255,0,T));
+    grad->setColorAt(1,QColor(255,0,0,T));
+    scaleRect->setBrush(*grad);
+    addItem(scaleRect);
+    QGraphicsTextItem* minScaleText = new QGraphicsTextItem();
+    scaleList.push_back(minScaleText);
+    minScaleText->setPlainText(QString::number(scaleMax));
+    minScaleText->setScale(2);
+    minScaleText->setPos(pixelResolution*ratio-5.6*pixelPerMeter,pixelResolution-pixelPerMeter);
+    QGraphicsTextItem* maxScaleText = new QGraphicsTextItem();
+    scaleList.push_back(maxScaleText);
+    maxScaleText->setPlainText(QString::number(scaleMin));
+    maxScaleText->setScale(2);
+    maxScaleText->setPos(pixelResolution*ratio-1.7*pixelPerMeter,pixelResolution-pixelPerMeter);
+    addItem(minScaleText);addItem(maxScaleText);
+
+    drawWalls();
+    addItem(transmitter);
+    scaleList.push_back(transmitter);
+}
+
 
 QPointF SimGraphicsScene::mirrorPointMaker(QLineF wline, QPointF initialPoint)
 {

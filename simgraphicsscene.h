@@ -20,21 +20,27 @@ public:
     void drawWalls();
     QColor gridColor;
     QString resolution;
-    void drawRect();
+    int ratio;
+    int lengthInMeter;
+    int pixelPerMeter;
+    void drawRect(int i,int j);
     void drawRays();
+    void drawScales();
     bool transmitterActivated;
     bool receiverActivated;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
+
+signals:
+    void refreshLoading(int value);
 public slots:
     void setRectTransparency(int value);
+
 private:
-    int ratio;
-    int lengthInMeter;
-    int pixelPerMeter;
     int scaleMax=-20;
     int scaleMin=-82;
     QList <Ray*> rayList;
+    QList <QGraphicsItem*> scaleList;
     int pixelResolution;
     QGraphicsTextItem* receiverPower=nullptr;
     QLinearGradient* grad;
