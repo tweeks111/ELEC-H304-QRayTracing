@@ -2,6 +2,7 @@
 
 SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* parent) : QGraphicsScene(parent)
 {
+    dBmActivated=false;
     this->transmitter=new Transmitter();
     this->receiver = new Receiver();
     foreach(Wall* wall,mapscene->getWalls()){
@@ -15,9 +16,13 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     this->ratio=mapscene->ratio;
     T=128;
     setSceneRect(0,0,ratio*pixelResolution,pixelResolution);
+    QGraphicsRectItem* whiteFontRect = new QGraphicsRectItem;
+    whiteFontRect->setRect(this->sceneRect());
+    whiteFontRect->setBrush(Qt::white);
+    addItem(whiteFontRect);
     gridColor=Qt::lightGray;
     gridPen.setColor(gridColor);
-    raysAreHidden=false;
+
 }
 
 void SimGraphicsScene::drawWalls()
@@ -97,9 +102,35 @@ void SimGraphicsScene::changeColorScale(int value)
     maxScaleText->setPlainText(QString::number(-value));
 }
 
+void SimGraphicsScene::hidedBm(bool value)
+{
+    dBmActivated=value;
+}
+
+
+void SimGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+
+    if(dBmActivated){
+        bool mouseOutside=true;
+        foreach(ReceiverRect* rect,rectList){
+            if(rect->mouseOver){
+                textPower->setPos(rect->rect().x()+lengthInMeter,rect->rect().y()-lengthInMeter);
+                textPower->setPlainText(QString::number(rect->power,'g',4)+"dBm");
+                textPower->setVisible(true);
+                mouseOutside=false;
+            }
+        }
+        if(mouseOutside){textPower->setVisible(false);};
+    }
+    else{
+        textPower->setVisible(false);
+    }
+    QGraphicsScene::mouseMoveEvent(event);
+}
+
 qreal SimGraphicsScene::drawRays()
 {
-    if(!raysAreHidden){
         qreal power = 0;
         std::complex<qreal> En=0;
         rayList.clear();
@@ -199,8 +230,7 @@ qreal SimGraphicsScene::drawRays()
             }
 
         }
-        receiver->power=10*log10(power/1e-3);
-    }
+    receiver->power=10*log10(power/1e-3);
     return receiver->power;
 
 }
@@ -250,9 +280,12 @@ void SimGraphicsScene::drawScales()
     drawWalls();
     addItem(transmitter);
     scaleList.push_back(transmitter);
+    textPower = new QGraphicsTextItem;
+    textPower->setScale(2);
+    scaleList.push_back(textPower);
+    addItem(textPower);
+
 }
-
-
 
 QPointF SimGraphicsScene::mirrorPointMaker(QLineF wline, QPointF initialPoint)
 {

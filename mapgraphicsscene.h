@@ -15,18 +15,24 @@ class MapGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
     public:
+    //Constructor
         MapGraphicsScene();
-        using QGraphicsScene::QGraphicsScene;
+            using QGraphicsScene::QGraphicsScene;
+    //Draw Functions
         void drawGrid(QString resolution);
         void drawWalls();
         void drawRays();
         void draw(QString resolution);
         void drawRXTX();
+    //Activated Boolean
         bool lineActivated;
         bool transmitterActivated;
         bool receiverActivated;
-        int actualThickness;
+    //Parameters
+        Transmitter* transmitter=nullptr;
+        Receiver* receiver = nullptr;
         QString actualMaterial;
+        QPen gridPen;
         QColor pointColor;
         QColor gridColor;
         QString resolution;
@@ -34,34 +40,42 @@ class MapGraphicsScene : public QGraphicsScene
         int lengthInMeter;
         int pixelResolution;
         int pixelPerMeter;
+        int actualThickness;
+    //Get Functions
         QList<QGraphicsItem*> getItems();
         QList<Wall*> getWalls();
         Transmitter* getTransmitter();
         bool isTransmitterNullptr();
+    //Set Functions
         void setGridColor(QColor background, QColor grid);
-        Transmitter* transmitter=nullptr;
-        Receiver* receiver = nullptr;
 protected:
         void mousePressEvent(QGraphicsSceneMouseEvent *event);
         void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
-    QPen gridPen;
-    QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
-    std::complex<qreal> EnCalcultor(QList <Ray*> rays, QLineF mirrorToRx);
-    QGraphicsLineItem* tempLine = nullptr;
-    QList <QGraphicsLineItem*> gridLines;
-    QList <Point*> pointList;
-    QList <Wall*> wallList;
-    QList <Wall*> removedWalls;
-    QList <Ray*> rayList;
-    QGraphicsTextItem* receiverPower=nullptr;
-    Ray* ray1 = nullptr;
-    bool raysAreHidden;
-    bool pointsAreHidden;
-    bool pointsAreAlwaysHidden;
-    bool isSameSide(Wall *w);
-    std::complex<qreal> checkWalls(Ray *ray);
-    qreal incidenceAngle(QLineF ray, Wall *wall);
+
+    //Items
+        QGraphicsLineItem* tempLine = nullptr;
+        QList <QGraphicsLineItem*> gridLines;
+        QList <Point*> pointList;
+        QList <Wall*> wallList;
+        QList <Wall*> removedWalls;
+        QList <Ray*> rayList;
+        QGraphicsTextItem* receiverPower=nullptr;
+        Ray* ray1 = nullptr;
+
+    //Hidden Boolean
+        bool raysAreHidden;
+        bool pointsAreHidden;
+        bool pointsAreAlwaysHidden;
+    //DrawRays Functions
+        bool isSameSide(Wall *w);
+        std::complex<qreal> checkWalls(Ray *ray);
+        std::complex<qreal> EnCalcultor(QList <Ray*> rays, QLineF mirrorToRx);
+        qreal incidenceAngle(QLineF ray, Wall *wall);
+        QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);
+
+
+
     signals:
             void sendPosition(QString);
             void sendLength(QString);

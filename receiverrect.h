@@ -8,9 +8,15 @@
 
 class ReceiverRect : public QGraphicsRectItem
 {
-public:
-    ReceiverRect(int x,int y, int w, int h,qreal power, QGraphicsItem* parent=nullptr);
-    qreal power;
+    public:
+        ReceiverRect(int x,int y, int w, int h,qreal power, QGraphicsItem* parent=nullptr);
+        qreal power;
+        bool mouseOver=false;
+    protected:
+
+        void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+        void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
 };
 
 #endif // RECEIVERRECT_H

@@ -6,12 +6,18 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     scene = new SimGraphicsScene(mapscene);
     view = new QGraphicsView(scene);
     view->setRenderHint(QPainter::Antialiasing, true);
-    timer = new QTimer();
-    //timer->setInterval(1);
     toolBar= new QToolBar("Tools");
     toolBar->setMovable(false);
     addToolBar(Qt::TopToolBarArea,toolBar);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateBar()));
+
+
+
+    dBmBtn = new QAction("&Show dBm");
+        dBmBtn->setCheckable(true);
+        connect(dBmBtn,&QAction::triggered,scene,&SimGraphicsScene::hidedBm);
+        dBmBtn->setIcon(QIcon("icons/dBmicon.png"));
+    toolBar->addAction(dBmBtn);
+    toolBar->addSeparator();
 
     QSlider* slider = new QSlider(Qt::Horizontal);
     slider->setMaximumWidth(100);
@@ -50,6 +56,8 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     menuBar=new QMenuBar(this);
     setMenuBar(menuBar);
     addMenuBar();
+    timer = new QTimer();
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateBar()));
     timer->start();
 }
 
@@ -59,7 +67,7 @@ SimWindow::~SimWindow(){
 void SimWindow::addMenuBar(){
 
     QMenu *menuFile= menuBar->addMenu("&File");
-        QAction *saveFile = new QAction("&Export as .png");
+        QAction *saveFile = new QAction("&Export image");
         connect(saveFile,&QAction::triggered,this,&SimWindow::save);
         saveFile->setIcon(QIcon("icons/savefileicon.png"));
         saveFile->setShortcut(QKeySequence("Ctrl+S"));
@@ -81,7 +89,7 @@ void SimWindow::save()
         if (!fileName.isNull())
         {
             img.save(fileName);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath()+"/images/"));
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath()+"/images/"));   // Not working why ?
         }
 
 }
@@ -100,16 +108,18 @@ void SimWindow::showEvent(QShowEvent *event)
 
 void SimWindow::updateBar()
 {
-    if(i>scene->lengthInMeter/scene->resolution.toFloat()){
+    qDebug("timer ok");
+    if(i>scene->lengthInMeter/scene->resolution.toFloat()-1){
         timer->stop();
         toolBar->removeAction(loadAction);
+        qDebug()<<i;
     }
     else{
         scene->drawRect(i,j);
         int value = i*4*scene->resolution.toFloat();
         loadBar->setValue(value);
         j++;
-        if(j>scene->lengthInMeter*scene->ratio/scene->resolution.toFloat()){
+        if(j>scene->lengthInMeter*scene->ratio/scene->resolution.toFloat()-1){
             j=0;
             i++;
         }

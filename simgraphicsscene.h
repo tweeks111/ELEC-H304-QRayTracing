@@ -29,15 +29,20 @@ public:
     void drawScales();
     bool transmitterActivated;
     bool receiverActivated;
+    bool dBmActivated;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
     QColor colorRect(qreal power);
+    QGraphicsTextItem * textPower;
+
 signals:
     void refreshLoading(int value);
 public slots:
     void setRectTransparency(int value);
     void changeColorScale(int value);
-
+    void hidedBm(bool);
+protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
     int scaleMax=-20;
     int scaleMin=-70;
@@ -57,7 +62,6 @@ private:
     QList <Wall*> wallList;
     QList <ReceiverRect*> rectList;
     Ray* ray1 = nullptr;
-    bool raysAreHidden;
     bool isSameSide(Wall *w);
     std::complex<qreal> checkWalls(Ray *ray);
     qreal incidenceAngle(QLineF ray, Wall *wall);

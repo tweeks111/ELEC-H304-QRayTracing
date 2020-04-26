@@ -26,13 +26,15 @@ protected slots:
         void updateBar();
 private:
         void addMenuBar();
+
         QMenuBar* menuBar;
-        int i;int j;
+        int i=0;int j=0;
         QToolBar* toolBar;
         QProgressBar* loadBar;
         int transparency;
         QTimer* timer;
         QAction* loadAction;
+        QAction* dBmBtn;
         SimGraphicsScene* scene;
         QGraphicsView* view;
         void save();

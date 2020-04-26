@@ -41,5 +41,6 @@ void MainWindow::addSimTab()
 
 void MainWindow::closeSimTab(int index)
 {
-    tabs->removeTab(index);
+
+    delete tabs->widget(index);
 }
