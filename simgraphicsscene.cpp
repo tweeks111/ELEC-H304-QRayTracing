@@ -15,13 +15,12 @@ SimGraphicsScene::SimGraphicsScene(MapGraphicsScene* mapscene, QGraphicsScene* p
     this->lengthInMeter=mapscene->lengthInMeter;
     this->ratio=mapscene->ratio;
     T=128;
+    B=0;
     setSceneRect(0,0,ratio*pixelResolution,pixelResolution);
     QGraphicsRectItem* whiteFontRect = new QGraphicsRectItem;
     whiteFontRect->setRect(this->sceneRect());
     whiteFontRect->setBrush(Qt::white);
     addItem(whiteFontRect);
-    gridColor=Qt::lightGray;
-    gridPen.setColor(gridColor);
 
 }
 
@@ -43,9 +42,14 @@ void SimGraphicsScene::drawRect(int i,int j){
         qreal power = drawRays();
         ReceiverRect* rect = new ReceiverRect(j*rectSize,i*rectSize,rectSize,rectSize,power);
         rectList.push_back(rect);
-        rect->setPen(Qt::NoPen);
-
-        rect->setBrush(colorRect(rect->power));
+        rect->rectColor =colorRect(rect->power);
+        rect->setPen(rect->rectColor);
+        rect->setBrush(rect->rectColor);
+        QGraphicsBlurEffect* blur = new QGraphicsBlurEffect;
+        blur->boundingRectFor(rect->boundingRect());
+        blur->setBlurHints(QGraphicsBlurEffect::PerformanceHint);
+        blur->setBlurRadius(B);
+        rect->setGraphicsEffect(blur);
         addItem(rect);
         update();
 
@@ -81,10 +85,10 @@ QColor SimGraphicsScene::colorRect(qreal pow)
 
 void SimGraphicsScene::setRectTransparency(int value){
     T=value;
-    foreach(QGraphicsRectItem* rect, rectList){
-        QColor color = rect->brush().color();
-        color.setAlpha(value);
-        rect->setBrush(color);
+    foreach(ReceiverRect* rect,rectList){
+        rect->rectColor.setAlpha(value);
+        rect->setBrush(rect->rectColor);
+        rect->setPen(rect->rectColor);
     }
     grad->setColorAt(0,QColor(0,255,0,value));
     grad->setColorAt(0.5,QColor(255,255,0,value));
@@ -92,11 +96,25 @@ void SimGraphicsScene::setRectTransparency(int value){
     scaleRect->setBrush(*grad);
 }
 
+void SimGraphicsScene::setRectBlur(int value)
+{
+    B=value;
+    foreach(QGraphicsRectItem* rect, rectList){
+        QGraphicsBlurEffect* blur = new QGraphicsBlurEffect;
+        blur->boundingRectFor(rect->rect());
+        blur->setBlurHints(QGraphicsBlurEffect::PerformanceHint);
+        blur->setBlurRadius(B);
+        rect->setGraphicsEffect(blur);
+    }
+}
+
 void SimGraphicsScene::changeColorScale(int value)
 {
     this->scaleMin=-value;
     foreach(ReceiverRect* rect, rectList){
-        rect->setBrush(colorRect(rect->power));
+        rect->rectColor=colorRect(rect->power);
+        rect->setBrush(rect->rectColor);
+        rect->setPen(rect->rectColor);
     }
     scaleRect->setBrush(*grad);
     maxScaleText->setPlainText(QString::number(-value));

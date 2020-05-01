@@ -12,6 +12,7 @@ class ReceiverRect : public QGraphicsRectItem
         ReceiverRect(int x,int y, int w, int h,qreal power, QGraphicsItem* parent=nullptr);
         qreal power;
         bool mouseOver=false;
+        QColor rectColor;
     protected:
 
         void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

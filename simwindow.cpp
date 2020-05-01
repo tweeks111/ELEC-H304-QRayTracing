@@ -11,7 +11,6 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     addToolBar(Qt::TopToolBarArea,toolBar);
 
 
-
     dBmBtn = new QAction("&Show dBm");
         dBmBtn->setCheckable(true);
         connect(dBmBtn,&QAction::triggered,scene,&SimGraphicsScene::hidedBm);
@@ -19,29 +18,39 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     toolBar->addAction(dBmBtn);
     toolBar->addSeparator();
 
-    QSlider* slider = new QSlider(Qt::Horizontal);
-    slider->setMaximumWidth(100);
-    slider->setMinimumWidth(50);
-    this->transparency=128;
-    slider->setRange(0,255);
-    slider->setTickInterval(1);
-    slider->setValue(128);
-    connect(slider,&QSlider::valueChanged,scene,&SimGraphicsScene::setRectTransparency);
-
     QSlider* scaleSlider = new QSlider(Qt::Horizontal);
     scaleSlider->setMaximumWidth(100);
     scaleSlider->setMinimumWidth(50);
     scaleSlider->setRange(40,100);
     scaleSlider->setTickInterval(5);
-    scaleSlider->setValue(70);
+    scaleSlider->setValue(55);
     connect(scaleSlider,&QSlider::valueChanged,scene,&SimGraphicsScene::changeColorScale);
+
+    QSlider* transparencySlider = new QSlider(Qt::Horizontal);
+    transparencySlider->setMaximumWidth(100);
+    transparencySlider->setMinimumWidth(50);
+    this->transparency=128;
+    transparencySlider->setRange(0,255);
+    transparencySlider->setTickInterval(1);
+    transparencySlider->setValue(128);
+    connect(transparencySlider,&QSlider::valueChanged,scene,&SimGraphicsScene::setRectTransparency);
+
+    blurSlider = new QSlider(Qt::Horizontal);
+    blurSlider->setMaximumWidth(100);
+    blurSlider->setMinimumWidth(50);
+    blurSlider->setRange(0,8);
+    blurSlider->setTickInterval(1);
+    connect(blurSlider,&QSlider::valueChanged,scene,&SimGraphicsScene::setRectBlur);
+
 
     toolBar->addWidget(new QLabel("Scale: "));
     toolBar->addWidget(scaleSlider);
     toolBar->addSeparator();
     toolBar->addWidget(new QLabel("Transparency: "));
-    toolBar->addWidget(slider);
+    toolBar->addWidget(transparencySlider);
     toolBar->addSeparator();
+
+
 
 
 
@@ -56,6 +65,10 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     menuBar=new QMenuBar(this);
     setMenuBar(menuBar);
     addMenuBar();
+    for(int it=0;it<pow(scene->lengthInMeter/scene->resolution.toFloat(),2);it++){
+        iterListI.push_back(it);
+    }
+    std::random_shuffle(iterListI.begin(),iterListI.end());
     timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(updateBar()));
     timer->start();
@@ -108,21 +121,21 @@ void SimWindow::showEvent(QShowEvent *event)
 
 void SimWindow::updateBar()
 {
-    qDebug("timer ok");
-    if(i>scene->lengthInMeter/scene->resolution.toFloat()-1){
-        timer->stop();
-        toolBar->removeAction(loadAction);
-        qDebug()<<i;
+    if(iter<pow(scene->lengthInMeter/scene->resolution.toFloat(),2)){
+        int i=(scene->resolution.toFloat()/scene->lengthInMeter)*iterListI.at(iter);
+        int j=iterListI.at(iter);
+        int res = 1/scene->resolution.toFloat();
+        j = j%(scene->lengthInMeter*res);
+        scene->drawRect(i,j);
+        int value = 100*(iter)/(pow(scene->lengthInMeter/scene->resolution.toFloat(),2));
+        loadBar->setValue(value);
+        iter++;
     }
     else{
-        scene->drawRect(i,j);
-        int value = i*4*scene->resolution.toFloat();
-        loadBar->setValue(value);
-        j++;
-        if(j>scene->lengthInMeter*scene->ratio/scene->resolution.toFloat()-1){
-            j=0;
-            i++;
-        }
+        timer->stop();
+        toolBar->removeAction(loadAction);
+        toolBar->addWidget(new QLabel("Blur: "));
+        toolBar->addWidget(blurSlider);
     }
     scene->drawScales();
     this->view->fitInView(removeMargin(scene->sceneRect(),this->view->size()),Qt::KeepAspectRatio);

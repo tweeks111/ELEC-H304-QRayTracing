@@ -80,6 +80,7 @@ private:
             void sendPosition(QString);
             void sendLength(QString);
             void sendDistance(QString);
+            void changeResolutionBox(QString);
     public slots:
             void placeTransmitter();
             void placeReceiver();

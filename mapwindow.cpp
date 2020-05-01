@@ -91,6 +91,7 @@ void MapWindow::addActionsToToolbar(){
         resolutionBox=new QComboBox;
         resolutionBox->addItem(QString::number(1));resolutionBox->addItem(QString::number(0.5));resolutionBox->addItem(QString::number(0.25));
             connect(resolutionBox,&QComboBox::currentTextChanged,scene,&MapGraphicsScene::draw);
+            connect(scene,&MapGraphicsScene::changeResolutionBox,this,&MapWindow::changeResolutionBox);
         toolBar2->addWidget(resolutionBox);
         toolBar2->addSeparator();
         QLabel *wallThicknessLabel= new QLabel("Wall Thichkness : ");
@@ -191,4 +192,10 @@ void MapWindow::changeColorToWhite()
     whiteAction->setChecked(true);
     grayAction->setChecked(false);
     scene->setGridColor(Qt::white,Qt::lightGray);
+}
+
+void MapWindow::changeResolutionBox(QString resolution)
+{
+    int index = resolutionBox->findText(resolution);
+    resolutionBox->setCurrentIndex(index);
 }

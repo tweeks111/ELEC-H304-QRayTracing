@@ -19,7 +19,8 @@ void ReceiverRect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void ReceiverRect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     mouseOver=false;
-    QPen pen(Qt::NoPen);
+    QPen pen(rectColor);
+    pen.setWidth(0);
     setPen(pen);
     QGraphicsRectItem::hoverLeaveEvent(event);
 }

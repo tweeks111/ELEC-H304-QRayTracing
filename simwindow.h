@@ -26,15 +26,17 @@ protected slots:
         void updateBar();
 private:
         void addMenuBar();
-
+        std::vector<int> iterListI;
+        std::vector<int> iterListJ;
         QMenuBar* menuBar;
-        int i=0;int j=0;
+        int iter=0;
         QToolBar* toolBar;
         QProgressBar* loadBar;
         int transparency;
         QTimer* timer;
         QAction* loadAction;
         QAction* dBmBtn;
+        QSlider* blurSlider;
         SimGraphicsScene* scene;
         QGraphicsView* view;
         void save();

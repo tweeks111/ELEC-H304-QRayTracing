@@ -39,13 +39,14 @@ signals:
     void refreshLoading(int value);
 public slots:
     void setRectTransparency(int value);
+    void setRectBlur(int value);
     void changeColorScale(int value);
     void hidedBm(bool);
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:
     int scaleMax=-20;
-    int scaleMin=-70;
+    int scaleMin=-55;
     QList <Ray*> rayList;
     QGraphicsTextItem*  maxScaleText;
     QList <QGraphicsItem*> scaleList;
@@ -54,6 +55,7 @@ private:
     QLinearGradient* grad;
     QGraphicsRectItem *scaleRect;
     int T;
+    int B;
     MapGraphicsScene* mapGraphicsScene;
     QPen gridPen;
     QPointF mirrorPointMaker(QLineF wline, QPointF initialPoint);

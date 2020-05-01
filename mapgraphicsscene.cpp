@@ -427,6 +427,7 @@ void MapGraphicsScene::load()
             in.setVersion(QDataStream::Qt_5_14);
             QString resolution;
             in >> resolution;
+            emit changeResolutionBox(resolution);
             int wallNb;
             in >> wallNb;
 

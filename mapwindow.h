@@ -58,6 +58,8 @@ protected:
         void showEvent(QShowEvent* event);
         void changeColorToLightgray();
         void changeColorToWhite();
+protected slots:
+        void changeResolutionBox(QString resolution);
 
 };
 
