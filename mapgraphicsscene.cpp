@@ -20,6 +20,8 @@ MapGraphicsScene::MapGraphicsScene(){
     actualThickness=15;
     actualMaterial="Concrete";
     resolution="1";
+
+
 }
 
 void MapGraphicsScene::drawGrid(QString resolution)
@@ -374,6 +376,7 @@ void MapGraphicsScene::save()
                 out<< (bool) false;
             }
             if(receiver){
+
                 out << (bool) true;
                 out << receiver->pos();
             }
@@ -502,9 +505,11 @@ std::complex<qreal> MapGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF Line
 {
     std::complex<qreal> coef = 1;
     foreach(Ray* ray,rays) coef*=ray->coef;
+    //qDebug()<<"Coef : "+QString::number(real(coef))+"+"+QString::number(imag(coef))+"j";
     std::complex<qreal> exponent(0,-transmitter->beta0);
     qreal dn = LineMirrorToRx.length()/pixelPerMeter;
     std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
+    //qDebug()<< "En : "+ QString::number(real(En))+ "+" +QString::number(imag(En))+"j";
     return En;
 }
 

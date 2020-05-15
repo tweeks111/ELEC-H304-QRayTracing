@@ -97,8 +97,8 @@ void Wall::computeCoef(qreal frequency){
     Z=sqrt(mu0/complexPermittivity);
     alpham= 2*pi*frequency*sqrt(mu0*relPermittivity*eps0/2)*sqrt(sqrt(1+pow(conductivity/(2*pi*frequency*relPermittivity*eps0),2))-1);
     betam= 2*pi*frequency*sqrt(mu0*relPermittivity*eps0/2)*sqrt(sqrt(1+pow(conductivity/(2*pi*frequency*relPermittivity*eps0),2))+1);
-    std::complex<qreal>gamma_m(alpham,betam);
-    gammam=betam;
+    std::complex<qreal> gamma_m(alpham,betam);
+    gammam = gamma_m;
     beta0= 2*pi*frequency/c;   // divided by light speed
 
 }
@@ -109,8 +109,7 @@ std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
     qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));
     qreal s = thickness/(100*cos(tranAngle));  // thickness is in cm => /100
     std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
-
-    std::complex<qreal> a(0,-betam*s);//a=-gammam*s;//
+    std::complex<qreal> a = -gammam*s;   //(0,-betam*s);
     std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
     return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2.0)*exp(2.0*a)*exp(b));
 
@@ -120,8 +119,9 @@ std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
     qreal incAngleRad=incAngle*pi/180;
     qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
     qreal s = thickness/(100*cos(tranAngle));
+
     std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
-    std::complex<qreal> a(0,-2*betam*s);//a=-2.0*gammam*s;//
+    std::complex<qreal> a=-2.0*gammam*s;          //(0,-2*betam*s);
     std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
     return (R + (1.0-pow(R,2.0))*(R*exp(a)*exp(b))/(1.0-pow(R,2.0)*exp(a)*exp(b)));
 
