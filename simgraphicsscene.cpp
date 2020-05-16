@@ -41,6 +41,7 @@ void SimGraphicsScene::drawRect(int i,int j){
         receiver->setPos((j+0.5)*rectSize,(i+0.5)*rectSize);
         qreal power = drawRays();
         ReceiverRect* rect = new ReceiverRect(j*rectSize,i*rectSize,rectSize,rectSize,power);
+        rect->debit();
         rectList.push_back(rect);
         rect->rectColor =colorRect(rect->power);
         rect->setPen(rect->rectColor);
@@ -134,15 +135,22 @@ void SimGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         foreach(ReceiverRect* rect,rectList){
             if(rect->mouseOver){
                 textPower->setPos(rect->rect().x()+lengthInMeter,rect->rect().y()-lengthInMeter);
+                textDebit->setPos(rect->rect().x()+lengthInMeter,rect->rect().y());
                 textPower->setPlainText(QString::number(rect->power,'g',4)+"dBm");
                 textPower->setVisible(true);
+                textDebit->setPlainText(QString::number(rect->debitBin,'g',4)+"Mb/s");
+                textDebit->setVisible(true);
                 mouseOutside=false;
             }
         }
-        if(mouseOutside){textPower->setVisible(false);};
+        if(mouseOutside){
+            textPower->setVisible(false);
+            textDebit->setVisible(false);
+        };
     }
     else{
         textPower->setVisible(false);
+        textDebit->setVisible(false);
     }
     QGraphicsScene::mouseMoveEvent(event);
 }
@@ -299,9 +307,13 @@ void SimGraphicsScene::drawScales()
     addItem(transmitter);
     scaleList.push_back(transmitter);
     textPower = new QGraphicsTextItem;
+    textDebit = new QGraphicsTextItem;
     textPower->setScale(2);
+    textDebit->setScale(2);
     scaleList.push_back(textPower);
+    scaleList.push_back(textDebit);
     addItem(textPower);
+    addItem(textDebit);
 
 }
 
@@ -338,9 +350,10 @@ std::complex<qreal> SimGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF Line
 {
     std::complex<qreal> coef = 1;
     foreach(Ray* ray,rays) coef*=ray->coef;
-    std::complex<qreal> exponent(0,-transmitter->beta0);
+    //std::complex<qreal> exponent(0,-transmitter->beta0);
     qreal dn = LineMirrorToRx.length()/pixelPerMeter;
-    std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
+    //std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
+    std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)/(dn);
     return En;
 }
 

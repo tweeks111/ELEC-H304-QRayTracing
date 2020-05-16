@@ -21,6 +21,21 @@ Receiver::Receiver(Receiver const &receiver){
     setCursor(Qt::OpenHandCursor);
     this->setPos(receiver.pos());
 }
+
+void Receiver::computeDebit()
+{
+    if(power>-51){
+        debit=433;
+    }
+    else if(power<-82){
+        debit=54;
+    }
+    else{
+        debit=power*(433-54)/(-51+82)+1056.516;
+    }
+}
+
+
 void Receiver::isMoving(bool b)
 {
     if(b){

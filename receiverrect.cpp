@@ -25,3 +25,17 @@ void ReceiverRect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsRectItem::hoverLeaveEvent(event);
 }
 
+
+
+void ReceiverRect::debit()
+{
+    if(power>-51){
+        debitBin=433;
+    }
+    else if(power<-82){
+        debitBin=54;
+    }
+    else{
+        debitBin=power*(433-54)/(-51+82)+1056.516;
+    }
+}

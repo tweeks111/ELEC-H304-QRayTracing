@@ -34,6 +34,7 @@ public:
     Receiver* receiver = nullptr;
     QColor colorRect(qreal power);
     QGraphicsTextItem * textPower;
+    QGraphicsTextItem * textDebit;
 
 signals:
     void refreshLoading(int value);

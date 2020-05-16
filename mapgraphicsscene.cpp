@@ -204,12 +204,15 @@ void MapGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         if(receiver){
             drawRXTX();
             receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
+            receiverDebit->setPlainText(QString::number(receiver->debit)+" Mb/s");
         }
     }
     if(receiverActivated){
         receiver->setPos(event->scenePos().x(),event->scenePos().y());
         receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
         receiverPower->setPos(event->scenePos().x()+pixelPerMeter,event->scenePos().y()-pixelPerMeter);
+        receiverDebit->setPlainText(QString::number(receiver->debit)+" Mb/s");
+        receiverDebit->setPos(event->scenePos().x()+pixelPerMeter,event->scenePos().y());
         if(transmitter){
             drawRXTX();
         }
@@ -251,6 +254,7 @@ void MapGraphicsScene::placeReceiver()
         receiverActivated=false;
         removeItem(receiver);
         removeItem(receiverPower);
+        removeItem(receiverDebit);
         receiver=nullptr;
         if(rayList.size()!=0){
             foreach(QGraphicsLineItem* ray,rayList) removeItem(ray);
@@ -267,9 +271,14 @@ void MapGraphicsScene::placeReceiver()
         receiverPower->setScale(2);
         receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
         receiverPower->setPos(receiver->x()+pixelPerMeter,receiver->y()-pixelPerMeter);
+        receiverDebit=new QGraphicsTextItem;
+        receiverDebit->setScale(2);
+        receiverDebit->setPlainText(QString::number(receiver->debit)+" Mb/s");
+        receiverDebit->setPos(receiver->x()+pixelPerMeter,receiver->y());
         pointsAreHidden=true;
         addItem(receiver);
         addItem(receiverPower);
+        addItem(receiverDebit);
         draw(resolution);
         receiver->isMoving(true);
     }
@@ -307,7 +316,7 @@ void MapGraphicsScene::clearItems()
         wallList.clear();
     }
     if(transmitter){ removeItem(transmitter);transmitter=nullptr;}
-    if(receiver){ removeItem(receiver);receiver=nullptr;removeItem(receiverPower);}
+    if(receiver){ removeItem(receiver);receiver=nullptr;removeItem(receiverPower);removeItem(receiverDebit);}
     if(rayList.size()!=0){
         foreach(QGraphicsLineItem* ray,rayList) removeItem(ray);
         rayList.clear();
@@ -464,6 +473,12 @@ void MapGraphicsScene::load()
                 receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
                 receiverPower->setPos(receiver->x()+pixelPerMeter,receiver->y()-pixelPerMeter);
                 addItem(receiverPower);
+
+                receiverDebit=new QGraphicsTextItem;
+                receiverDebit->setScale(2);
+                receiverDebit->setPlainText(QString::number(receiver->debit)+" Mb/s");
+                receiverDebit->setPos(receiver->x()+pixelPerMeter,receiver->y());
+                addItem(receiverDebit);
             }
         file.close();
         draw(resolution);
@@ -504,10 +519,14 @@ std::complex<qreal> MapGraphicsScene::checkWalls(Ray *ray)
 std::complex<qreal> MapGraphicsScene::EnCalcultor(QList <Ray*> rays, QLineF LineMirrorToRx)
 {
     std::complex<qreal> coef = 1;
-    foreach(Ray* ray,rays) coef*=ray->coef;
+    foreach(Ray* ray,rays){
+        coef*=ray->coef;
+        //qDebug()<<"coef :" +QString::number(real(coef))+"+"+QString::number(imag(coef))+"j";
+    }
     //qDebug()<<"Coef : "+QString::number(real(coef))+"+"+QString::number(imag(coef))+"j";
     std::complex<qreal> exponent(0,-transmitter->beta0);
     qreal dn = LineMirrorToRx.length()/pixelPerMeter;
+    //qDebug()<< "dn : " +QString::number(dn);
     std::complex<qreal> En=coef*sqrt(60*transmitter->Gtx*transmitter->power)*exp(exponent*dn)/(dn);
     //qDebug()<< "En : "+ QString::number(real(En))+ "+" +QString::number(imag(En))+"j";
     return En;
@@ -531,7 +550,8 @@ void MapGraphicsScene::drawRays()
         rayList.push_back(ray1);
         addItem(ray1);
         for(Wall* w1:wallList){
-            if(isSameSide(w1)){
+            // 1 REFLEXION
+            //if(isSameSide(w1)){
                 QPointF mirrorPoint = mirrorPointMaker(w1->line(), transmitter->pos());
                 QPointF intersectPoint;
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
@@ -552,7 +572,7 @@ void MapGraphicsScene::drawRays()
                     addItem(ray2);addItem(ray3);
                     }
                 for(Wall* w2:wallList){
-
+                    //2 REFLEXIONS
                     if(w2!=w1){
                         rayPen.setColor(QColor(224, 152, 27));
                         QPointF mirrorPoint2 = mirrorPointMaker(w2->line(), mirrorPoint);
@@ -582,8 +602,7 @@ void MapGraphicsScene::drawRays()
                         }
 
                         for(Wall* w3:wallList){
-
-
+                            //3 REFLEXION
                             if(w3!=w2){
                                 rayPen.setColor(QColor(224, 27, 27));
                                 QPointF mirrorPoint3 = mirrorPointMaker(w3->line(), mirrorPoint2);
@@ -627,13 +646,17 @@ void MapGraphicsScene::drawRays()
                     }
                 }
 
-            }
+            //}
 
         }
         receiver->power=10*log10(power/1e-3);
         receiverPower->setPlainText(QString::number(receiver->power)+" dBm");
         removeItem(receiverPower);
         addItem(receiverPower);
+        receiver->computeDebit();
+        receiverDebit->setPlainText(QString::number(receiver->debit)+" Mb/s");
+        removeItem(receiverDebit);
+        addItem(receiverDebit);
     }
 
 }

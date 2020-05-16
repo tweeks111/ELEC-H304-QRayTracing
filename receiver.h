@@ -10,6 +10,8 @@ class Receiver : public QGraphicsPixmapItem
         Receiver(QGraphicsItem* parent=nullptr);
         Receiver(Receiver const &Receiver);
         qreal power=0;
+        int debit=0;
+        void computeDebit();
     private :
         QImage image;
         bool moving;

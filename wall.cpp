@@ -111,18 +111,22 @@ std::complex<qreal> Wall::computeTXCoef(qreal incAngle)
     std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
     std::complex<qreal> a = -gammam*s;   //(0,-betam*s);
     std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
-    return ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2.0)*exp(2.0*a)*exp(b));
+    std::complex<qreal> Tm = ((1.0-pow(R,2.0))*exp(a))/(1.0-pow(R,2.0)*exp(2.0*a)*exp(b));
+    return Tm;
 
 }
 std::complex<qreal> Wall::computeRXCoef(qreal incAngle)
 {
     qreal incAngleRad=incAngle*pi/180;
+    //qDebug()<<QString::number(incAngle);
     qreal tranAngle = asin(sqrt(1/relPermittivity)*sin(incAngleRad));  //vacuum permittivity
     qreal s = thickness/(100*cos(tranAngle));
 
     std::complex<qreal> R = ((Z*cos(incAngleRad)-Z0*cos(tranAngle))/(Z*cos(incAngleRad)+Z0*cos(tranAngle)));
     std::complex<qreal> a=-2.0*gammam*s;          //(0,-2*betam*s);
     std::complex<qreal> b(0,beta0*2*s*sin(incAngleRad)*sin(tranAngle));
-    return (R + (1.0-pow(R,2.0))*(R*exp(a)*exp(b))/(1.0-pow(R,2.0)*exp(a)*exp(b)));
+    std::complex<qreal> GammaM = (R + (1.0-pow(R,2.0))*(R*exp(a)*exp(b))/(1.0-pow(R,2.0)*exp(a)*exp(b)));
+    //qDebug()<<"GammaM : "+ QString::number(real(GammaM))+ "+ j"+QString::number(imag(GammaM));
+    return GammaM;
 
 }

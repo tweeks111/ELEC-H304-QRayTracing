@@ -13,6 +13,8 @@ class ReceiverRect : public QGraphicsRectItem
         qreal power;
         bool mouseOver=false;
         QColor rectColor;
+        int debitBin;
+        void debit ();
     protected:
 
         void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

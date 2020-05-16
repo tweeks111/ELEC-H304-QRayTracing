@@ -61,6 +61,7 @@ private:
         QList <Wall*> removedWalls;
         QList <Ray*> rayList;
         QGraphicsTextItem* receiverPower=nullptr;
+        QGraphicsTextItem* receiverDebit=nullptr;
         Ray* ray1 = nullptr;
 
     //Hidden Boolean
