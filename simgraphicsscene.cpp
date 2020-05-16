@@ -167,7 +167,7 @@ qreal SimGraphicsScene::drawRays()
         power += (1/(8*transmitter->Ra))*pow(abs(transmitter->he*En),2);
         rayList.push_back(ray1);
         for(Wall* w1:wallList){
-            if(isSameSide(w1)){
+            //if(isSameSide(w1)){
                 QPointF mirrorPoint = mirrorPointMaker(w1->line(), transmitter->pos());
                 QPointF intersectPoint;
                 QLineF lineRXtoMP1(receiver->x(),receiver->y(),mirrorPoint.x(),mirrorPoint.y());
@@ -253,7 +253,7 @@ qreal SimGraphicsScene::drawRays()
                     }
                 }
 
-            }
+            //}
 
         }
     receiver->power=10*log10(power/1e-3);
