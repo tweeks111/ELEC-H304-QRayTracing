@@ -31,7 +31,8 @@ void Receiver::computeDebit()
         debit=54;
     }
     else{
-        debit=power*(433-54)/(-51+82)+1056.516;
+        double debitBinLog=power*(log10(433)-log10(54))/(-51+82)+4.123868;
+        debit=(int) pow(10.0,debitBinLog);
     }
 }
 

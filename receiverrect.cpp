@@ -36,7 +36,7 @@ void ReceiverRect::debit()
         debitBin=54;
     }
     else{
-        double debitBinLog=power*(log10(433)-log10(54))/(-51+82)+1056.516;
-        debitBin=pow(10.0,debitBinLog);
+        double debitBinLog=power*(log10(433)-log10(54))/(-51+82)+4.123868;
+        debitBin=(int) pow(10.0,debitBinLog);
     }
 }
