@@ -44,7 +44,10 @@ void SimGraphicsScene::drawRect(int i,int j){
         rect->debit();
         rectList.push_back(rect);
         rect->rectColor =colorRect(rect->power);
-        rect->setPen(rect->rectColor);
+        QPen pen;
+        pen.setColor(rect->rectColor);
+        pen.setWidth(0);
+        rect->setPen(pen);
         rect->setBrush(rect->rectColor);
         QGraphicsBlurEffect* blur = new QGraphicsBlurEffect;
         blur->boundingRectFor(rect->boundingRect());
