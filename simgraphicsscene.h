@@ -31,6 +31,7 @@ public:
     bool receiverActivated;
     bool dBmActivated;
     bool noCoActivated;
+    bool colorScale = false;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
     QColor colorRect(qreal power);
@@ -42,7 +43,8 @@ signals:
 public slots:
     void setRectTransparency(int value);
     void setRectBlur(int value);
-    void changeColorScale(int value);
+    void changeColorScale(int);
+    void changeColor();
     void hidedBm(bool);
     void hideNoCo(bool);
 protected:

@@ -24,6 +24,12 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
         noCoBtn->setIcon(QIcon("icons/nocoicon.png"));
     toolBar->addAction(noCoBtn);
     toolBar->addSeparator();
+    colorScaleAction = new QAction("Change color scale");
+    connect(colorScaleAction,&QAction::triggered,scene,&SimGraphicsScene::changeColor);
+    colorScaleAction->setIcon(QIcon("icons/scaleicon.png"));
+    toolBar->addAction(colorScaleAction);
+    toolBar->addSeparator();
+
 
     QSlider* scaleSlider = new QSlider(Qt::Horizontal);
     scaleSlider->setMaximumWidth(100);
@@ -36,10 +42,10 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     QSlider* transparencySlider = new QSlider(Qt::Horizontal);
     transparencySlider->setMaximumWidth(100);
     transparencySlider->setMinimumWidth(50);
-    this->transparency=128;
+    this->transparency=200;
     transparencySlider->setRange(0,255);
     transparencySlider->setTickInterval(1);
-    transparencySlider->setValue(128);
+    transparencySlider->setValue(200);
     connect(transparencySlider,&QSlider::valueChanged,scene,&SimGraphicsScene::setRectTransparency);
 
     blurSlider = new QSlider(Qt::Horizontal);
@@ -93,6 +99,14 @@ void SimWindow::addMenuBar(){
         saveFile->setShortcut(QKeySequence("Ctrl+S"));
         menuFile->addAction(saveFile);
         menuFile->addSeparator();
+
+    QMenu *menuEdit= menuBar->addMenu("&Edit");
+        menuEdit->addAction(dBmBtn);
+        menuEdit->addAction(noCoBtn);
+
+    QMenu *menuView= menuBar->addMenu("&View");
+        menuView->addAction(colorScaleAction);
+
 
 }
 

@@ -37,6 +37,7 @@ private:
         QAction* loadAction;
         QAction* dBmBtn;
         QAction* noCoBtn;
+        QAction *colorScaleAction;
         QSlider* blurSlider;
         SimGraphicsScene* scene;
         QGraphicsView* view;
