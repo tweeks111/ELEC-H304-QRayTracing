@@ -36,6 +36,7 @@ private:
         QTimer* timer;
         QAction* loadAction;
         QAction* dBmBtn;
+        QAction* noCoBtn;
         QSlider* blurSlider;
         SimGraphicsScene* scene;
         QGraphicsView* view;

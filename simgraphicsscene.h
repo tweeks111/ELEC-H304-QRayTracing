@@ -30,6 +30,7 @@ public:
     bool transmitterActivated;
     bool receiverActivated;
     bool dBmActivated;
+    bool noCoActivated;
     Transmitter* transmitter=nullptr;
     Receiver* receiver = nullptr;
     QColor colorRect(qreal power);
@@ -43,6 +44,7 @@ public slots:
     void setRectBlur(int value);
     void changeColorScale(int value);
     void hidedBm(bool);
+    void hideNoCo(bool);
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 private:

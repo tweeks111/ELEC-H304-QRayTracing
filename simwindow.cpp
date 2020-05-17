@@ -18,6 +18,13 @@ SimWindow::SimWindow(MapGraphicsScene* mapscene, QWidget *parent) : QMainWindow(
     toolBar->addAction(dBmBtn);
     toolBar->addSeparator();
 
+    noCoBtn = new QAction("&Show no network zone");
+        noCoBtn->setCheckable(true);
+        connect(noCoBtn,&QAction::triggered,scene,&SimGraphicsScene::hideNoCo);
+        noCoBtn->setIcon(QIcon("icons/nocoicon.png"));
+    toolBar->addAction(noCoBtn);
+    toolBar->addSeparator();
+
     QSlider* scaleSlider = new QSlider(Qt::Horizontal);
     scaleSlider->setMaximumWidth(100);
     scaleSlider->setMinimumWidth(50);

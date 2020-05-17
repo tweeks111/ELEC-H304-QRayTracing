@@ -116,9 +116,16 @@ void SimGraphicsScene::changeColorScale(int value)
 {
     this->scaleMin=-value;
     foreach(ReceiverRect* rect, rectList){
-        rect->rectColor=colorRect(rect->power);
-        rect->setBrush(rect->rectColor);
-        rect->setPen(rect->rectColor);
+        if(noCoActivated&&rect->power<-82){
+            rect->rectColor=Qt::black;
+            rect->setBrush(rect->rectColor);
+            rect->setPen(rect->rectColor);
+        }
+        else{
+            rect->rectColor=colorRect(rect->power);
+            rect->setBrush(rect->rectColor);
+            rect->setPen(rect->rectColor);
+        }
     }
     scaleRect->setBrush(*grad);
     maxScaleText->setPlainText(QString::number(-value));
@@ -127,6 +134,27 @@ void SimGraphicsScene::changeColorScale(int value)
 void SimGraphicsScene::hidedBm(bool value)
 {
     dBmActivated=value;
+}
+
+void SimGraphicsScene::hideNoCo(bool value)
+{
+    noCoActivated=value;
+    if(noCoActivated){
+        foreach(ReceiverRect* rect,rectList){
+            if(rect->power<-82){
+                rect->rectColor=Qt::black;
+                rect->setBrush(rect->rectColor);
+                rect->setPen(rect->rectColor);
+            }
+        }
+    }
+    else{
+        foreach(ReceiverRect* rect, rectList){
+            rect->rectColor=colorRect(rect->power);
+            rect->setBrush(rect->rectColor);
+            rect->setPen(rect->rectColor);
+        }
+    }
 }
 
 
