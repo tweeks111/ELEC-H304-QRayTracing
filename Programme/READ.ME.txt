@@ -1,0 +1,22 @@
+Théo LEPOUTTE
+Oscar VAN SLIJPE
+
+18/05/2020
+
+1) L'executable se nomme QRayTracing.exe et se situe dans le dossier Programme.
+
+	- Il est possible de charger des cartes existantes depuis le programme. 
+	  Celles-ci ont une extension .RAY et se situent dans le dossier Programme/saves.
+
+	- Les cartographies sous forme d'images s'enregistrent dans le dossier Programme/images.
+
+	- Il est nécessaire de placer au moins un émetteur sur la carte pour pouvoir lancer la simulation.
+
+	- La résolution se règle en bas à gauche de l'écran. Celle-ci impacte à la fois 
+	  l'éditeur de cartes et la précision de la simulation.
+
+	- Des cartes ont été mises dans le dossier en guise d'exemple ("rooms_example.RAY",...)
+
+
+2) Le code C++ (fonctionnant avec l'IDE Qt) se situe dans le dossier Code.
+
